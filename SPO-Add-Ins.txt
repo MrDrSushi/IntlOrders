@@ -1,0 +1,6 @@
+
+https://{TENANT-NAME}.sharepoint.com/sites/data/_layouts/15/AppInv.aspx
+
+https://{TENANT-NAME}.sharepoint.com/sites/data/_layouts/15/AppRegNew.aspx
+
+https://{TENANT-NAME}.sharepoint.com/sites/data/_layouts/15/AppPrincipals.aspx

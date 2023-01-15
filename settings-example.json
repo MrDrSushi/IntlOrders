@@ -1,0 +1,14 @@
+{
+   "SPORootSite" : "tenant.sharepoint.com",
+   "SPOSite"     : "Commerce",
+   "SPOList"     : "sales",
+
+   "SPOAddinClientId"     : "00000000-0000-0000-0000-000000000000",
+   "SPOAddinClientSecret" : "xxxXXXXxxxXXXXxxx",
+
+   "BingAPIKey" : "xxxXXXXxxxXXXXxxx",
+
+   "tenant"        : "00000000-0000-0000-0000-000000000000",
+   "client_id"     : "00000000-0000-0000-0000-000000000000",
+   "client_secret" : "xxxXXXXxxxXXXXxxx"
+}

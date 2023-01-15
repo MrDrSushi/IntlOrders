@@ -1,0 +1,58 @@
+{
+    "sections": [
+        {
+            "displayname": "Order",
+            "fields": [
+                "Title",
+                "ItemType",
+                "ItemSKU",
+                "Sector",
+                "Confidential",
+                "OrderID",
+                "OrderPriority",
+                "OrderDate",
+                "UnitsSold",
+                "UnitPrice",
+                "UnitCost",
+                "TotalRevenue",
+                "TotalCost",
+                "TotalProfit",
+                "Containers",
+                "FreightTerms",
+                "SalesChannel",
+                "SalesCoordinator",
+                "SalesPerson",
+                "PaymentCoordinator"
+            ]
+        }
+        ,
+        {
+            "displayname": "Shipping Information",
+            "fields": [
+                "ShippingForeman",
+                "ShippingInsured",
+                "ShippingDate",
+                "ShippingMethod"
+            ]
+        }
+        ,
+        {
+            "displayname": "Ports Information",
+            "fields": [
+                "VesselNameOrID",
+                "PortOfOrigin",
+                "PortOfOriginName",
+                "PortOfDestiny",
+                "PortOfDestinyName"
+            ]
+        }
+        ,
+        {
+            "displayname": "Comments and Notes",
+            "fields": [
+                "ShippingNotes",
+                "Comments"
+            ]
+        }
+    ]
+}

@@ -13,7 +13,7 @@ $RunSettings_TotalRecords = 5
 # $RunSettings_LocalRegion.NumberFormat.NumberDecimalSeparator = $settings.DecimalSeparator
 # $RunSettings_LocalRegion.NumberFormat.NumberGroupSeparator   = $settings.GroupSeparator
 
-if ( Test-Path -Path ".\settings.csv" )
+if ( Test-Path -Path ".\settings.json" )
 {
     ">> settings.json not found!"
     break
@@ -746,7 +746,7 @@ $requestUsers = Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/sites/$
 #   SipAddress:    the most important filter, it will excludes the system accounts such as "SHAREPOINT\system", "NT Service\SPSearch", "Everyone", and other groups
 #                  it is redudant to include "Fields/ContentType -eq "Person", filtering the data with SipAddress will limit the results only to user accounts
 #
-#   The final product is just a list of IDs, we won't need anything else when creating new records
+#   The final product is just a list of IDs, we won't need anything else when creating new items
 
 $Users = $requestUsers.value.fields | ? { $_.IsSiteAdmin -eq $false -and $_.Deleted -eq $false -and $_.SipAddress  -ne $null } | select id
 
@@ -934,7 +934,7 @@ for ($loop = 1; $loop -le $RunSettings_TotalRecords; $loop++)
 
     #
     #   Submits the request to the Graph API endpoint
-    #   The request is limited to a maximum of 20 records
+    #   The request is limited to a maximum of 20 items
     #
 
     if ( ($load.requests.Count -eq 20) -or ($load.requests.count -gt 0 -and $loop -eq $RunSettings_TotalRecords) )

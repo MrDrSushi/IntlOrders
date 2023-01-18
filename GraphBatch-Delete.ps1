@@ -1,6 +1,6 @@
 ﻿clear-host
 
-if ( Test-Path -Path ".\settings.csv" )
+if ( Test-Path -Path ".\settings.json" )
 {
     ">> settings.json not found!"
     break
@@ -70,16 +70,16 @@ $requestID = Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/sites/$($s
 
 if ($null -eq $requestID)
 {
-    "- There are no more records!"
+    "- There are no more items!"
     exit
 }
 
 #   where to start and finish (SPO List item IDs)
 
 $itemDeleteStart = $requestID.value.id
-$itemDeleteEnd   = 4940
+$itemDeleteEnd   = 5000
 
-#   self-contined, useful variables for the deletion loop
+#   self-contained, useful variables for the deletion loop
 
 $batchTotal = [math]::ceiling( ($itemDeleteEnd - $itemDeleteStart) / 20 )
 $leadingZeroes = "d" + $($batchTotal).ToString().Length

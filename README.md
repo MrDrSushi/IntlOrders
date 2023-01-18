@@ -44,6 +44,12 @@ The script creates the new list, adds all the fields with its particular propert
 
 #
 
+Use this script to create the SharePoint Online list, if there is already a list with the same name as specified in the settings.json, the existing list will be deleted and sent to the recycle bin.
+
+The script creates the new list, adds all the fields with its particular properties, such as column formatting, length, required, and any additional formats regarding the precision and types.
+
+#
+
 ### [GraphBatch-AddItems.ps1](GraphBatch-AddItems.ps1)
 
 #
@@ -92,6 +98,7 @@ I've opted for a central configuration file to keep me from updating the scripts
 
 
 
+### **Data Sources**
 ### **Data Sources**
 
 

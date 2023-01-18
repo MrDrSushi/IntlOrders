@@ -75,6 +75,8 @@ If the first item available on your list is the ```ID: 39```, the script will st
 
 ### [Sample-QueryUsers.ps1](Sample-QueryUsers.ps1)
 
+(descriptive text to be added here)
+
 #
 
 ### [orders-layout-header.json](orders-layout-header.json)
@@ -97,8 +99,7 @@ I've opted for a central configuration file to keep me from updating the scripts
 
 
 
-### **Data Sources**
-### **Data Sources**
+## **Data Sources**
 
 
 [Create-Tables.sql](Create-Tables.sql)

@@ -31,10 +31,7 @@ Create a copy from "settings-example.json" and rename it into "settings.json", u
 
 ## **Script Files**
 
-
-
-  \
-
+<br>
 
 [Create-SPO-List-Orders.ps1](Create-SPO-List-Orders.ps1)
 
@@ -51,6 +48,8 @@ The script creates the new list, adds all the fields with its particular propert
 #
 
 ### [GraphBatch-AddItems.ps1](GraphBatch-AddItems.ps1)
+
+(descriptive text to be added here)
 
 #
 

@@ -13,7 +13,7 @@ $RunSettings_TotalRecords = 5
 # $RunSettings_LocalRegion.NumberFormat.NumberDecimalSeparator = $settings.DecimalSeparator
 # $RunSettings_LocalRegion.NumberFormat.NumberGroupSeparator   = $settings.GroupSeparator
 
-if ( Test-Path -Path ".\settings.json" )
+if ( (Test-Path -Path ".\settings.json") -eq $false )
 {
     ">> settings.json not found!"
     break

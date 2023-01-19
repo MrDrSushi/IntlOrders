@@ -1,6 +1,6 @@
 ﻿clear-host
 
-if ( Test-Path -Path ".\settings.json" )
+if ( (Test-Path -Path ".\settings.json") -eq $false )
 {
     ">> settings.json not found!"
     break

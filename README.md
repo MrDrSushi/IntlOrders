@@ -1,7 +1,6 @@
 # **International Orders**
 
 <br>
-<br>
 
 ## **Purpose**
 
@@ -14,10 +13,15 @@ There are two mains scripts in this repo for daily use, one to quickly add items
 You might wonder why there is an specific script for the deletion of list items, and the reason is simple, lists that exceed the SharePoint list view threshold can't be deleted from SharePoint, and it is your job to clean up the items to bring the list down for a sucessul removal. The script it is also useful for a quick maintenance to delete any amount of unwanted items.
 
 And last but not least, there is also a script for the creation of the list called [Create-SPO-List-Orders.ps1](Create-SPO-List-Orders.ps1), it creates a brand new list containing all the columns, the script properly configures each column with their length, precisions, data types, and formatting rules.
+
+It is also a good demo for newcomers learning
+
 <br>
 <br>
 
 ## **Getting Started**
+
+<br>
 
 Download all the files or simply clone the repo to your local machine:
 
@@ -26,6 +30,9 @@ git clone https://github.com/MrDrSushi/IntlOrders/
 ```
 
 Create a copy from "settings-example.json" and rename it into "settings.json", update its contents with the actual values matching your environment, keep this new file together with all the scripts, this will be used by all the scripts in order to gain access to your tenant, in the future I will include some level of encryption instead of plain file, for now it is just a small workaround, so keep it safe!
+
+You will need to register for a Bing API Key: https://www.microsoft.com/en-us/maps/create-a-bing-maps-key - this is a necessary step to get map rendering for the locations used by columns PortOfOrigin,and PortOfDestiny, if you want to skip this step, just comment out the references to the variablle ```$customFormaterMaps``` in the list creation.
+
 <br>
 <br>
 

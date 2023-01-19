@@ -2,7 +2,7 @@
 
 if ( (Test-Path -Path ".\settings.json") -eq $false )
 {
-    ">> settings.json not found!"
+    ">> settings.json not found!`n"
     break
 }
 else
@@ -435,7 +435,7 @@ $FreightTerms = @(
 
 # Creating the new list
 
-New-PnPList -Title "International Orders" -Url "$($settings.SPOList)" -Template GenericList  -OnQuickLaunch  | Format-Table
+New-PnPList -Title "Orders" -Url "$($settings.SPOList)" -Template GenericList  -OnQuickLaunch  | Format-Table
 
 # Item Type
 

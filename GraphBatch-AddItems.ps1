@@ -15,7 +15,7 @@ $RunSettings_TotalRecords = 5
 
 if ( (Test-Path -Path ".\settings.json") -eq $false )
 {
-    ">> settings.json not found!"
+    ">> settings.json not found!`n"
     break
 }
 else
@@ -33,7 +33,7 @@ if ( (Test-Path -Path ".\world-data-Airports.csv") -and ($null -eq $airports) )
 }
 elseif ((Test-Path -Path ".\world-data-Airports.csv" ) -eq $false)
 {
-    ">> World-data-Airports.csv not found!"
+    ">> World-data-Airports.csv not found!`n"
     break
 }
 
@@ -44,7 +44,7 @@ if ( (Test-Path -Path ".\World-data-Locations.csv") -and ($null -eq $locations) 
 }
 elseif ((Test-Path -Path ".\World-data-Locations.csv") -eq $false)
 {
-    ">> Wolrd-data-Locations.csv not found!"
+    ">> Wolrd-data-Locations.csv not found!`n"
     break
 }
 
@@ -55,7 +55,7 @@ if ( (Test-Path -Path ".\world-data-Ports.csv") -and ($null -eq $ports) )
 }
 elseif ( (Test-Path -Path ".\world-data-Ports.csv") -eq $false )
 {
-    ">> Wolrd-data-Ports.csv not found!"
+    ">> Wolrd-data-Ports.csv not found!`n"
     break
 }
 
@@ -683,7 +683,7 @@ if ($null -ne $requestSite)
 }
 else
 {
-    ">> Site '$($settings.SPORootSite)' not found!"
+    ">> Site '$($settings.SPORootSite)' not found!`n"
     break
 }
 
@@ -699,7 +699,7 @@ if ($null -ne $requestList)
 }
 else
 {
-    ">> List '$($settings.SPOList)' not found!"
+    ">> List '$($settings.SPOList)' not found!`n"
     break
 }
 
@@ -729,7 +729,7 @@ if ($requestUsersList -ne $null)
 }
 else
 {
-    ">> SharePoint Online 'User Information List' not found!"
+    ">> SharePoint Online 'User Information List' not found!`n"
     break
 }
 
@@ -978,7 +978,7 @@ for ($loop = 1; $loop -le $RunSettings_TotalRecords; $loop++)
                     {
                         # TO-DO:  failed requests are not being correctly handled here (to be improved later on)
 
-                        "`n -- Error - Aborting process"
+                        "`n -- Error - Aborting process`n"
                         break
                     }
                 }

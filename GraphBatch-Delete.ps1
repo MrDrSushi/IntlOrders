@@ -2,7 +2,7 @@
 
 if ( (Test-Path -Path ".\settings.json") -eq $false )
 {
-    ">> settings.json not found!"
+    ">> settings.json not found!`n"
     break
 }
 else
@@ -42,7 +42,7 @@ if ($null -ne $requestSite)
 }
 else
 {
-    ">> Site '$($settings.SPOSite)' not found!"
+    ">> Site '$($settings.SPOSite)' not found!`n"
     break
 }
 
@@ -58,7 +58,7 @@ if ($null -ne $requestList)
 }
 else
 {
-    ">> List '$($settings.SPOList)' not found!"
+    ">> List '$($settings.SPOList)' not found!`n"
     break
 }
 
@@ -70,7 +70,7 @@ $requestID = Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/sites/$($s
 
 if ($null -eq $requestID)
 {
-    "- There are no more items!"
+    "- There are no more items!`n"
     exit
 }
 
@@ -148,7 +148,7 @@ $itemDeleteStart..$itemDeleteEnd | % {
                 #
                 # TO-DO:  needs some better handling for failed requests - for now just aborting the process
                 #
-                "`n -- Error - Aborting process"
+                "`n -- Error - Aborting process`n"
                 break
             }
         }

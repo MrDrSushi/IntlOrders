@@ -433,16 +433,29 @@ $FreightTerms = @(
 #endregion ═══════════════════════════════════════════════════════════════════════════════════════════════════════
 
 
-# Creating the new list
+# ════ Creating the new list
 
-New-PnPList -Title "Orders" -Url "$($settings.SPOList)" -Template GenericList  -OnQuickLaunch  | Format-Table
+New-PnPList -Title "Orders" -Url "$($settings.SPOList)" -Template GenericList -EnableContentTypes -OnQuickLaunch | Format-Table
 
-# Item Type
-
-Add-PnPField -List "$($settings.SPOList)" -DisplayName "Item Type" -InternalName "ItemType" -Type Choice -Choices $ItemType -AddToDefaultView -Group "Main"
+Set-PnPList -Identity "$($settings.SPOList)" -EnableAttachments:$false -EnableFolderCreation:$false -EnableVersioning:$false -EnableModeration:$false | Format-Table
 
 
-# Item SKU
+# ════ Title
+
+Set-PnPField -List "$($settings.SPOList)" -Identity Title -Values @{Required=$false;Hidden=$true}
+
+
+# ════ Item Type
+
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Item Type" -InternalName "ItemType" -Type Choice -Choices $ItemType -Required -AddToDefaultView -Group "Main"
+
+    $field
+    $field.DefaultValue = "Air Fryer"
+    $field.Update()
+    $field.Context.ExecuteQuery()
+
+
+# ════ Item SKU
 
 $field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Item SKU"  -InternalName "ItemSKU" -Type Text -AddToDefaultView -Group "Main"
 
@@ -450,166 +463,250 @@ $field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Item SKU"  -Int
     Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id  -Values @{MaxLength=36}
 
 
-# Sector
+# ════ Sector
 
-Add-PnPField -List "$($settings.SPOList)" -DisplayName "Sector" -InternalName "Sector" -Type Choice -Choices $Sector -AddToDefaultView -Group "Main"
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Sector" -InternalName "Sector" -Type Choice -Choices $Sector -Required -AddToDefaultView -Group "Main"
 
-
-# Confidential
-
-Add-PnPField -List "$($settings.SPOList)" -DisplayName "Confidential" -InternalName "Confidential" -Type Boolean -AddToDefaultView -Group "Main"
-
-
-# Order ID
-
-Add-PnPField -List "$($settings.SPOList)" -DisplayName "Order ID" -InternalName "OrderID" -Type Integer -AddToDefaultView -Group "Main"
+    $field
+    $field.DefaultValue = "Private"
+    $field.Update()
+    $field.Context.ExecuteQuery()
 
 
-# Order Priority
+# ════ Confidential
 
-Add-PnPField -List "$($settings.SPOList)" -DisplayName "Order Priority" -InternalName "OrderPriority" -Type Choice -Choices $OrderPriority -AddToDefaultView -Group "Main"
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Confidential" -InternalName "Confidential" -Type Boolean -Required -AddToDefaultView -Group "Main"
+
+    $field
+    $field.DefaultValue = 0
+    $field.Update()
+    $field.Context.ExecuteQuery()
 
 
-# Order Date
+# ════ Order ID
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Order Date" -InternalName "OrderDate" -Type DateTime -AddToDefaultView -Group "Main"
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Order ID" -InternalName "OrderID" -Type Number -Required -AddToDefaultView -Group "Main"
+
+    $field
+    [xml]$schema = $field.SchemaXml
+    $schema.Field.SetAttribute("Decimals", "0")
+    Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
+
+
+# ════ Order Priority
+
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Order Priority" -InternalName "OrderPriority" -Type Choice -Choices $OrderPriority -Required -AddToDefaultView -Group "Main"
+
+    $field
+    $field.DefaultValue = "Low"
+    $field.Update()
+    $field.Context.ExecuteQuery()
+
+
+# ════ Order Date
+
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Order Date" -InternalName "OrderDate" -Type DateTime -Required -AddToDefaultView -Group "Main"    
 
     $field
     [xml]$schema = $field.SchemaXml
     $schema.Field.SetAttribute("Format","DateOnly")
     Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
 
-
-# Units Sold
-
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Units Sold" -InternalName "UnitsSold" -Type Number -AddToDefaultView -Group "Main"
-
-    $field
-    [xml]$schema = $field.SchemaXml
-    $schema.Field.SetAttribute("Decimals", "0")
-    $schema.Field.SetAttribute("Format", "Dropdown")
-    $schema.Field.SetAttribute("CommaSeparator","TRUE")
-    Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
+    $filed = Get-PnPField -List "$($settings.SPOList)" -Identity "OrderDate"
+    $field.DefaultFormula = "=NOW()"
+    $field.Update()
+    $field.Context.ExecuteQuery()
 
 
-# Unit Price
+# ════ Units Sold
 
-Add-PnPField -List "$($settings.SPOList)" -DisplayName "Unit Price" -InternalName "UnitPrice" -Type Currency -AddToDefaultView -Group "Main"
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Units Sold" -InternalName "UnitsSold" -Type Currency -Required -AddToDefaultView -Group "Main"    
 
+    #$field
+    #[xml]$schema = $field.SchemaXml
+    #$schema.Field.SetAttribute("Decimals", "0")
+    #Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
 
-# Unit Cost
-
-Add-PnPField -List "$($settings.SPOList)" -DisplayName "Unit Cost" -InternalName "UnitCost" -Type Currency -AddToDefaultView -Group "Main"
-
-
-# Total Revenue
-
-Add-PnPField -List "$($settings.SPOList)" -DisplayName "Total Revenue" -InternalName "TotalRevenue" -Type Currency -AddToDefaultView -Group "Main"
-
-
-# Total Cost
-
-Add-PnPField -List "$($settings.SPOList)" -DisplayName "Total Cost" -InternalName "TotalCost" -Type Currency -AddToDefaultView -Group "Main"
-
-
-# Total Profit
-
-Add-PnPField -List "$($settings.SPOList)" -DisplayName "Total Profit" -InternalName "TotalProfit" -Type Currency -AddToDefaultView -Group "Main"
-
-
-# Containers
-
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Containers" -InternalName "Containers" -Type Number -AddToDefaultView -Group "Main"
+    #$field = Get-PnPField -List "$($settings.SPOList)" -Identity "UnitsSold"
 
     $field
+    $field.DefaultValue = 0
+    $field.Update()
+    $field.Context.ExecuteQuery()
+
+
+# ════ Unit Price
+
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Unit Price" -InternalName "UnitPrice" -Type Currency -Required -AddToDefaultView -Group "Main"
+
+    $field
+    $field.DefaultValue = 0
+    $field.Update()
+    $field.Context.ExecuteQuery()
+
+
+# ════ Unit Cost
+
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Unit Cost" -InternalName "UnitCost" -Type Currency -Required -AddToDefaultView -Group "Main"
+
+    $field
+    $field.DefaultValue = 0
+    $field.Update()
+    $field.Context.ExecuteQuery()
+
+
+# ════ Total Revenue
+
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Total Revenue" -InternalName "TotalRevenue" -Type Currency -Required -AddToDefaultView -Group "Main"
+
+    $field
+    $field.DefaultValue = 0
+    $field.Update()
+    $field.Context.ExecuteQuery()
+
+    #$field
+    #$field.DefaultFormula = "= [UnitsSold] * [UnitPrice]"
+    #$field.Update()
+    #$field.Context.ExecuteQuery()
+
+
+# ════ Total Cost
+
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Total Cost" -InternalName "TotalCost" -Type Currency -Required -AddToDefaultView -Group "Main"
+
+    $field
+    $field.DefaultValue = 0
+    $field.Update()
+    $field.Context.ExecuteQuery()
+
+
+# ════ Total Profit
+
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Total Profit" -InternalName "TotalProfit" -Type Currency -Required -AddToDefaultView -Group "Main"
+
+    $field
+    $field.DefaultValue = 0
+    $field.Update()
+    $field.Context.ExecuteQuery()
+
+
+# ════ Containers
+
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Containers" -InternalName "Containers" -Type Number -Required -AddToDefaultView -Group "Main"
+
+    $field
 
     [xml]$schema = $field.SchemaXml
     $schema.Field.SetAttribute("Decimals", "0")
-    $schema.Field.SetAttribute("Format", "Dropdown")
-    $schema.Field.SetAttribute("CommaSeparator","TRUE")
     Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
 
-
-# Freight Terms
-
-Add-PnPField -List "$($settings.SPOList)" -DisplayName "Freight Terms" -InternalName "FreightTerms" -Type Choice -Choices $FreightTerms -AddToDefaultView -Group "Main"
-
-# Sales Channel
-
-Add-PnPField -List "$($settings.SPOList)" -DisplayName "Sales Channel" -InternalName "SalesChannel" -Type Choice -Choices $SalesChannel -AddToDefaultView -Group "Main"
+    $field = Get-PnPField -List "$($settings.SPOList)" -Identity "Containers"
+    $field.DefaultValue = 0
+    $field.Update()
+    $field.Context.ExecuteQuery()
 
 
-# Sales Coordinator
+# ════ Freight Terms
+
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Freight Terms" -InternalName "FreightTerms" -Type Choice -Choices $FreightTerms -Required -AddToDefaultView -Group "Main"
+
+    $field
+    $field.DefaultValue = "Elsewhere"
+    $field.Update()
+    $field.Context.ExecuteQuery()
+
+
+# ════ Sales Channel
+
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Sales Channel" -InternalName "SalesChannel" -Type Choice -Choices $SalesChannel -Required -AddToDefaultView -Group "Main"
+
+    $field
+    $field.DefaultValue = "Sales Rep"
+    $field.Update()
+    $field.Context.ExecuteQuery()
+
+
+# ════ Sales Coordinator
 
 $field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Sales Coordinator" -InternalName "SalesCoordinator"  -Type User -AddToDefaultView -Group "Main"
 
     $field
-
     [xml]$schema = $field.SchemaXml
     $schema.Field.SetAttribute("UserDisplayOptions","NamePhoto")
     Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
 
 
-# Sales Person
+# ════ Sales Person
 
 $field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Sales Person" -InternalName "SalesPerson" -Type User -AddToDefaultView -Group "Main"
 
     $field
-
     [xml]$schema = $field.SchemaXml
     $schema.Field.SetAttribute("UserDisplayOptions","NamePhoto")
     Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
 
 
-# Payment Coordinator
+# ════ Payment Coordinator
 
 $field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Payment Coordinator" -InternalName "PaymentCoordinator" -Type User -AddToDefaultView -Group "Main"
 
     $field
-
     [xml]$schema = $field.SchemaXml
     $schema.Field.SetAttribute("UserDisplayOptions","NamePhoto")
     Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
 
 
-# Shipping Foreman
+# ════ Shipping Foreman
 
 $field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Shipping Foreman" -InternalName "ShippingForeman" -Type User -AddToDefaultView -Group "Main"
 
     $field
-
     [xml]$schema = $field.SchemaXml
     $schema.Field.SetAttribute("UserDisplayOptions","NamePhoto")
     Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
 
 
-# Shipping Insured
+# ════ Shipping Insured
 
-Add-PnPField -List "$($settings.SPOList)" -DisplayName "Shipping Insured" -InternalName "ShippingInsured" -Type Boolean  -AddToDefaultView -Group "Main"
-
-
-# Shipping Date
-
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Shipping Date" -InternalName "ShippingDate" -Type DateTime -AddToDefaultView -Group "Main"
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Shipping Insured" -InternalName "ShippingInsured" -Type Boolean -Required -AddToDefaultView -Group "Main"
 
     $field
+    $field.DefaultValue = 0
+    $field.Update()
+    $field.Context.ExecuteQuery()
 
+
+# ════ Shipping Date
+
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Shipping Date" -InternalName "ShippingDate" -Type DateTime -Required -AddToDefaultView -Group "Main"
+
+    $field
     [xml]$schema = $field.SchemaXml
     $schema.Field.SetAttribute("Format","DateOnly")
     Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
 
+    $filed = Get-PnPField -List "$($settings.SPOList)" -Identity "ShippingDate"
+    $field.DefaultFormula = "=NOW()+30"
+    $field.Update()
+    $field.Context.ExecuteQuery()
 
-# Shipping Method
 
-Add-PnPField -List "$($settings.SPOList)" -DisplayName "Shipping Method"  -InternalName "ShippingMethod" -Type Choice -Choices $ShippingMethod -AddToDefaultView -Group "Main"
+# ════ Shipping Method
+
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Shipping Method"  -InternalName "ShippingMethod" -Type Choice -Choices $ShippingMethod -Required -AddToDefaultView -Group "Main"
+
+    $field
+    $field.DefaultValue = "Land"
+    $field.Update()
+    $field.Context.ExecuteQuery()
 
 
-# Vessel Name
+# ════ Vessel Name
 
 Add-PnPField -List "$($settings.SPOList)" -DisplayName "Vessel Name" -InternalName "VesselNameOrID" -Type Choice -Choices $VesselName -AddToDefaultView -Group "Main"
 
 
-# Port Of Origin
+# ════ Port Of Origin
 
 $field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Port Of Origin" -InternalName "PortOfOrigin" -Type Text -AddToDefaultView -Group "Main"
 
@@ -620,7 +717,7 @@ $field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Port Of Origin"
     Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
 
 
-# Port Of Origin Name
+# ════ Port Of Origin Name
 
 $field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Port Of Origin Name"  -InternalName "PortOfOriginName" -Type Text -AddToDefaultView -Group "Main"
 
@@ -628,7 +725,7 @@ $field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Port Of Origin 
     Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{MaxLength=40}
 
 
-# Port Of Destiny
+# ════ Port Of Destiny
 
 $field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Port Of Destiny" -InternalName "PortOfDestiny" -Type Text -AddToDefaultView -Group "Main"
 
@@ -639,7 +736,7 @@ $field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Port Of Destiny
     Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
 
 
-# Port Of Destiny Name
+# ════ Port Of Destiny Name
 
 $field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Port Of Destiny Name" -InternalName "PortOfDestinyName" -Type Text -AddToDefaultView -Group "Main"
 
@@ -647,16 +744,21 @@ $field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Port Of Destiny
     Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{MaxLength=40}
 
 
-# Shipping Notes
+# ════ Shipping Notes
 
 Add-PnPField -List "$($settings.SPOList)" -DisplayName "Shipping Notes" -InternalName "ShippingNotes" -Type Note -AddToDefaultView -Group "Main"
 
 
-# Comments
+# ════ Comments
 
 Add-PnPField -List "$($settings.SPOList)" -DisplayName "Comments" -InternalName "Comments" -Type Note -AddToDefaultView -Group "Main"
 
 
-# Title Field
+# ════ Hiding the unwanted Title field
 
-Set-PnPField -List "$($settings.SPOList)" -Identity Title -Values @{Group="Main"}
+
+$view = Get-PnPView -List Orders -Identity "All Items" 
+
+$view.ViewFields.Remove("LinkTitle")
+$view.Update()
+$view.Context.ExecuteQuery()

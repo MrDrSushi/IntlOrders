@@ -3,20 +3,31 @@
         {
             "displayname": "Order",
             "fields": [
-                "Title",
                 "ItemType",
                 "ItemSKU",
                 "Sector",
                 "Confidential",
                 "OrderID",
                 "OrderPriority",
-                "OrderDate",
+                "OrderDate"
+            ]
+        }
+        ,
+        {
+            "displayname": "Units and Totals",
+            "fields": [
                 "UnitsSold",
                 "UnitPrice",
                 "UnitCost",
                 "TotalRevenue",
                 "TotalCost",
-                "TotalProfit",
+                "TotalProfit"
+            ]
+        }
+        ,
+        {
+            "displayname": "Freight Information",
+            "fields": [
                 "Containers",
                 "FreightTerms",
                 "SalesChannel",

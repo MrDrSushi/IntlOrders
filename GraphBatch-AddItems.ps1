@@ -5,7 +5,7 @@
 clear-host
 
 $RunSettings_SoftRun      = $false
-$RunSettings_TotalRecords = 5
+$RunSettings_TotalRecords = 1
 
 # future implementation
 #

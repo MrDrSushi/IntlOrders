@@ -15,7 +15,7 @@ $RunSettings_TotalRecords = 1
 
 if ( (Test-Path -Path ".\settings.json") -eq $false )
 {
-    ">> settings.json not found!`n"
+    write-error ">> settings.json not found!`n"
     break
 }
 else
@@ -33,7 +33,7 @@ if ( (Test-Path -Path ".\world-data-Airports.csv") -and ($null -eq $airports) )
 }
 elseif ((Test-Path -Path ".\world-data-Airports.csv" ) -eq $false)
 {
-    ">> World-data-Airports.csv not found!`n"
+    write-error ">> World-data-Airports.csv not found!`n"
     break
 }
 
@@ -44,7 +44,7 @@ if ( (Test-Path -Path ".\World-data-Locations.csv") -and ($null -eq $locations) 
 }
 elseif ((Test-Path -Path ".\World-data-Locations.csv") -eq $false)
 {
-    ">> Wolrd-data-Locations.csv not found!`n"
+    write-error ">> Wolrd-data-Locations.csv not found!`n"
     break
 }
 
@@ -55,7 +55,7 @@ if ( (Test-Path -Path ".\world-data-Ports.csv") -and ($null -eq $ports) )
 }
 elseif ( (Test-Path -Path ".\world-data-Ports.csv") -eq $false )
 {
-    ">> Wolrd-data-Ports.csv not found!`n"
+    write-error ">> Wolrd-data-Ports.csv not found!`n"
     break
 }
 
@@ -683,7 +683,7 @@ if ($null -ne $requestSite)
 }
 else
 {
-    ">> Site '$($settings.SPORootSite)' not found!`n"
+    write-error ">> Site '$($settings.SPORootSite)' not found!`n"
     break
 }
 
@@ -699,7 +699,7 @@ if ($null -ne $requestList)
 }
 else
 {
-    ">> List '$($settings.SPOList)' not found!`n"
+    write-error ">> List '$($settings.SPOList)' not found!`n"
     break
 }
 
@@ -729,7 +729,7 @@ if ($requestUsersList -ne $null)
 }
 else
 {
-    ">> SharePoint Online 'User Information List' not found!`n"
+    write-error ">> SharePoint Online 'User Information List' not found!`n"
     break
 }
 
@@ -860,7 +860,7 @@ for ($loop = 1; $loop -le $RunSettings_TotalRecords; $loop++)
 
         $field_ShippingNotes = Get-ShipmentComment
         $field_Comments      = Get-ShipmentComment
-        $field_Title         = "{0}, {1}" -f  $field_ItemType, $field_UnitsSold.ToString("###,###,###,###")    #$field_UnitsSold.ToString("N0", $RegionNZ)
+        $field_Title         = "{0}, {1}" -f  $field_ItemType, $field_UnitsSold.ToString("###,###,###,###")
 
     }
 
@@ -978,7 +978,7 @@ for ($loop = 1; $loop -le $RunSettings_TotalRecords; $loop++)
                     {
                         # TO-DO:  failed requests are not being correctly handled here (to be improved later on)
 
-                        "`n -- Error - Aborting process`n"
+                        write-error "`n -- Error - Aborting process`n"
                         break
                     }
                 }
@@ -992,7 +992,7 @@ for ($loop = 1; $loop -le $RunSettings_TotalRecords; $loop++)
                 #   Something went wrong, we will display the batch output followed by its Exception Message (to be improved later on)
                 #
 
-                "`n>>>>  Batch {0:$($leadingZeroes)} of {1} `t`t`t :: Exception: {2} `n" -f $batch_Counter, [math]::ceiling($RunSettings_TotalRecords / 20), $_.Exception.Message
+                write-error "`n>>>>  Batch {0:$($leadingZeroes)} of {1} `t`t`t :: Exception: {2} `n" -f $batch_Counter, [math]::ceiling($RunSettings_TotalRecords / 20), $_.Exception.Message
             }
 
         $load = @{ requests = @() }

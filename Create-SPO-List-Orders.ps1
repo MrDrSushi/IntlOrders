@@ -2,7 +2,7 @@
 
 if ( (Test-Path -Path ".\settings.json") -eq $false )
 {
-    ">> settings.json not found!`n"
+    write-error ">> settings.json not found!`n"
     break
 }
 else
@@ -505,7 +505,7 @@ $field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Order Priority"
 
 # ════ Order Date
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Order Date" -InternalName "OrderDate" -Type DateTime -Required -AddToDefaultView -Group "Main"    
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Order Date" -InternalName "OrderDate" -Type DateTime -Required -AddToDefaultView -Group "Main"
 
     $field
     [xml]$schema = $field.SchemaXml
@@ -520,7 +520,7 @@ $field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Order Date" -In
 
 # ════ Units Sold
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Units Sold" -InternalName "UnitsSold" -Type Currency -Required -AddToDefaultView -Group "Main"    
+$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Units Sold" -InternalName "UnitsSold" -Type Currency -Required -AddToDefaultView -Group "Main"
 
     #$field
     #[xml]$schema = $field.SchemaXml
@@ -757,7 +757,7 @@ Add-PnPField -List "$($settings.SPOList)" -DisplayName "Comments" -InternalName 
 # ════ Hiding the unwanted Title field
 
 
-$view = Get-PnPView -List Orders -Identity "All Items" 
+$view = Get-PnPView -List Orders -Identity "All Items"
 
 $view.ViewFields.Remove("LinkTitle")
 $view.Update()

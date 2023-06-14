@@ -62,8 +62,7 @@ The script creates the new list, adds all the fields with its particular propert
 
 ### [GraphBatch-Delete.ps1](GraphBatch-Delete.ps1)
 
-this is the clean up script, you can use this script for removing all items or just small amounts of items from your list, the only part of the script where you want to update is a variable called:
- ```$itemDeleteEnd = 5000```
+this is the clean up script, you can use this script for removing all items or just small amounts of items from your list, the only part of the script where you want to update is a variable called: ```$itemDeleteEnd = 5000```
 
 In the script this place is located at line number 80 and looks like the following:
 
@@ -102,12 +101,7 @@ If the first item available on your list is the ```ID: 39```, the script will st
 
 I've opted for a central configuration file to keep me from updating the scripts, this saves time from updating files individually if anything changes on my tenant, make a copy of this file into a new called called "**settings.json**" on your local machine and keep it together with all the scripts, this file will be used by the scripts in order to gain access to your tenant.
 
-
-
-
-
 ## **Data Sources**
-
 
 [Create-Tables.sql](Create-Tables.sql)
 

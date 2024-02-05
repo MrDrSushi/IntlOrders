@@ -1,11 +1,5 @@
 # **International Orders**
 
-new contents int the document
-
-s
-x
-
-
 <br>
 
 ## **Purpose**

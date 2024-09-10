@@ -1,4 +1,30 @@
-﻿clear-host
+﻿<#
+
+    SharePoint Add-ins
+    ==================
+
+
+    Registering a new application:    https://contoso.sharepoint.com/_layouts/15/AppRegNew.aspx
+
+    List registered applications:     https://contoso.sharepoint.com/_layouts/15/AppPrincipals.aspx
+
+    Review registered application:    https://contoso.sharepoint.com/_layouts/15/AppInv.aspx
+
+
+    Permissions Sample:
+
+    <AppPermissionRequests AllowAppOnlyPolicy="true">
+       <AppPermissionRequest Scope="http://sharepoint/content/tenant" Right="FullControl" />
+    </AppPermissionRequests>
+
+    <AppPermissionRequests AllowAppOnlyPolicy="true">
+       <AppPermissionRequest Scope="http://sharepoint/content/sitecollection" Right="FullControl" />
+    </AppPermissionRequests>
+
+#>
+
+
+clear-host
 
 if ( (Test-Path -Path ".\settings.json") -eq $false )
 {

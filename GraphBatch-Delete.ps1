@@ -13,7 +13,7 @@ else
 $startTime = Get-Date
 
 $Token_Body = @{
-                    "tenant"        = $settings.tenant
+                    "tenant"        = $settings.tenant_domain
                     "grant_type"    = "client_credentials"
                     "client_id"     = $settings.client_id
                     "client_secret" = $settings.client_secret
@@ -32,9 +32,10 @@ $Token_ExpirationTime = (Get-Date).AddSeconds($Token_GraphAPI.expires_in)
 
 #   Site ID for $settings.SPOSite
 
-$requestSite = Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/sites/$($settings.SPORootSite):/sites/$($settings.SPOSite)" `
-                                 -Headers @{"Authorization" = "Bearer $($Token_GraphAPI.access_token)"} `
-                                 -ContentType "application/json; charset=utf-8" -Method GET
+$requestSite = Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/sites/$($settings.SPORootSite):/sites/$($settings.SPOSite)"   `
+                                 -Headers @{"Authorization" = "Bearer $($Token_GraphAPI.access_token)"}                               `
+                                 -ContentType "application/json; charset=utf-8"                                                       `
+                                 -Method GET
 
 if ($null -ne $requestSite)
 {
@@ -48,9 +49,10 @@ else
 
 #   the List ID for $settings.SPOList
 
-$requestList = Invoke-RestMethod -Uri  "https://graph.microsoft.com/v1.0/sites/$($siteId)/lists/$($settings.SPOList)" `
-                                 -Headers @{"Authorization" = "Bearer $($Token_GraphAPI.access_token)"} `
-                                 -ContentType "application/json; charset=utf-8" -Method GET
+$requestList = Invoke-RestMethod -Uri  "https://graph.microsoft.com/v1.0/sites/$($siteId)/lists/$($settings.SPOList)"   `
+                                 -Headers @{"Authorization" = "Bearer $($Token_GraphAPI.access_token)"}                 `
+                                 -ContentType "application/json; charset=utf-8"                                         `
+                                 -Method GET
 
 if ($null -ne $requestList)
 {
@@ -64,9 +66,10 @@ else
 
 #   deletion process begins from the first ID available
 
-$requestID = Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/sites/$($siteID)/lists/$($listID)/items?`$top=1" `
-                               -ContentType "application/json"  `
-                               -Method Get -Headers @{ Authorization = "Bearer $($Token_GraphAPI.access_token)" }
+$requestID = Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/sites/$($siteID)/lists/$($listID)/items?`$top=1"  `
+                               -Headers @{"Authorization" = "Bearer $($Token_GraphAPI.access_token)"}                   `
+                               -ContentType "application/json; charset=utf-8"                                           `
+                               -Method GET
 
 if ($null -eq $requestID)
 {
@@ -76,23 +79,23 @@ if ($null -eq $requestID)
 
 #   where to start and finish (SPO List item IDs)
 
-$itemDeleteStart = $requestID.value.id
-$itemDeleteEnd   = 5000
+$itemDeleteStartID = $requestID.value.id
+$itemDeleteEndID   = 1000
 
 #   self-contained, useful variables for the deletion loop
 
-$batchTotal = [math]::ceiling( ($itemDeleteEnd - $itemDeleteStart) / 20 )
+$batchTotal    = [math]::ceiling( ($itemDeleteEndID - $itemDeleteStartID) / 20 )
 $leadingZeroes = "d" + $($batchTotal).ToString().Length
-$batchCurrent = $itemsQueued = $index = $dependsOn = 0
-$showOutput = $false
-$payload = $requests = $request = @()
+$batchCurrent  = $itemsQueued = $index = $dependsOn = 0
+$showOutput    = $false
 
+$payload       = $requests = $request = @()
 
 #
-#   Performs the deletion of items from "itemDeleteStart" to "itemDeleteEnd"
+#   Performs the deletion of items from "itemDeleteStartID" to "itemDeleteEnd"
 #
 
-$itemDeleteStart..$itemDeleteEnd | % {
+$itemDeleteStartID..$itemDeleteEndID | % {
 
     $index++
     $itemsQueued++
@@ -116,8 +119,9 @@ $itemDeleteStart..$itemDeleteEnd | % {
     if ($itemsQueued -eq 20)
     {
         $batchCurrent++
+        
         $showOutput = $true
-        $dependsOn = 0
+        $dependsOn  = 0
 
         $payload = @{ requests = $requests } | ConvertTo-Json -Depth 4
 
@@ -138,10 +142,11 @@ $itemDeleteStart..$itemDeleteEnd | % {
         $batchRequest = $null
 
         $timeRequest = Measure-Command {
-            $batchRequest = Invoke-RestMethod -Uri 'https://graph.microsoft.com/v1.0/$batch' `
-                                              -ContentType "application/json" `
-                                              -Body $payload -Method Post `
-                                              -Headers @{ Authorization = "Bearer $($Token_GraphAPI.access_token)" }
+            $batchRequest = Invoke-RestMethod -Uri 'https://graph.microsoft.com/v1.0/$batch'                            `
+                                              -Body $payload                                                            `
+                                              -Headers @{"Authorization" = "Bearer $($Token_GraphAPI.access_token)"}    `
+                                              -ContentType "application/json"                                           `
+                                              -Method POST
 
             if ($batchRequest -EQ $null)
             {
@@ -183,7 +188,7 @@ $itemDeleteStart..$itemDeleteEnd | % {
 
 }
 
-$endTime = Get-Date
+$endTime   = Get-Date
 $totalTime = $endTime - $startTime
 
 "`n`n════════════════»»  Total runtime: {0:d2}h:{1:d2}min:{2:d2}s.{3:d3}ms" -f $totalTime.Hours, $totalTime.Minutes, $totalTime.Seconds, $totalTime.Milliseconds

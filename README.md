@@ -62,15 +62,15 @@ The script creates the new list, adds all the fields with its particular propert
 
 ### [GraphBatch-Delete.ps1](GraphBatch-Delete.ps1)
 
-this is the clean up script, you can use this script for removing all items or just small amounts of items from your list, the only part of the script where you want to update is a variable called: ```$itemDeleteEnd = 5000```
+this is the clean up script, you can use this script for removing all items or just small amounts of items from your list, the only part of the script where you want to update is a variable called: ```$itemDeleteEndID = 5000```
 
 In the script this place is located at line number 80 and looks like the following:
 
 ```powershell
 #   where to start and finish (SPO List item IDs)
 
-$itemDeleteStart = $requestID.value.id
-$itemDeleteEnd   = 5000
+$itemDeleteStartID = $requestID.value.id
+$itemDeleteEndID   = 5000
 ```
 
 In the example above, the number ```5000``` is the ID for the last item you wanted to be deleted from your list, the script starts from the very first available ID in your list and advances until it reaches the end of the list of a matching item with ```ID: 5000```.

@@ -1,17 +1,19 @@
-﻿#
-#     General Settings for the script execution
-#
-
 clear-host
 
-$RunSettings_SoftRun      = $false
-$RunSettings_TotalRecords = 1
-
-# future implementation
 #
-# $RunSettings_LocalRegion = New-Object System.Globalization.CultureInfo($settings.LocalRegion)
-# $RunSettings_LocalRegion.NumberFormat.NumberDecimalSeparator = $settings.DecimalSeparator
-# $RunSettings_LocalRegion.NumberFormat.NumberGroupSeparator   = $settings.GroupSeparator
+#   General Settings for the script execution
+#
+
+$RunSettings_SoftRun      = $false
+$RunSettings_TotalRecords = 10
+
+#
+#   future implementation
+#
+#   $RunSettings_LocalRegion = New-Object System.Globalization.CultureInfo($settings.LocalRegion)
+#   $RunSettings_LocalRegion.NumberFormat.NumberDecimalSeparator = $settings.DecimalSeparator
+#   $RunSettings_LocalRegion.NumberFormat.NumberGroupSeparator   = $settings.GroupSeparator
+#
 
 if ( (Test-Path -Path ".\settings.json") -eq $false )
 {
@@ -37,14 +39,14 @@ elseif ((Test-Path -Path ".\world-data-Airports.csv" ) -eq $false)
     break
 }
 
-if ( (Test-Path -Path ".\World-data-Locations.csv") -and ($null -eq $locations) )
+if ( (Test-Path -Path ".\world-data-Locations.csv") -and ($null -eq $locations) )
 {
-    $locations = Import-Csv ".\World-data-Locations.csv" -Encoding UTF8
+    $locations = Import-Csv ".\world-data-Locations.csv" -Encoding UTF8
     $locations_countries = $locations | Select-Object country , iso2 | Sort-Object -Unique country
 }
-elseif ((Test-Path -Path ".\World-data-Locations.csv") -eq $false)
+elseif ((Test-Path -Path ".\world-data-Locations.csv") -eq $false)
 {
-    write-error ">> Wolrd-data-Locations.csv not found!`n"
+    write-error ">> world-data-Locations.csv not found!`n"
     break
 }
 
@@ -55,7 +57,7 @@ if ( (Test-Path -Path ".\world-data-Ports.csv") -and ($null -eq $ports) )
 }
 elseif ( (Test-Path -Path ".\world-data-Ports.csv") -eq $false )
 {
-    write-error ">> Wolrd-data-Ports.csv not found!`n"
+    write-error ">> wolrd-data-Ports.csv not found!`n"
     break
 }
 
@@ -63,210 +65,111 @@ elseif ( (Test-Path -Path ".\world-data-Ports.csv") -eq $false )
 
 #region ══════════════════════════════════════════════════════════════════════════════════════[ Random Comments ]
 
-function Get-ShipmentComment
-{
-    $Notes1 = @(
-                "The", "All", "The following"
-               )
+function Get-ShipmentComment {
+    
+    $shippingstuff = Get-Random -InputObject @('Box','Cargo', 'Container', 'Crate', 'Package', 'Pallet', 'Stash')
 
-    $Notes2 = @(
-                "goods", "items", "contents", "stock", "supplied", "stated", "products", "merchandise", "wares", "articles"
-               )
+    $subjects      = @(
+        "The cargo", "$($shippingstuff) #$(Get-Random -Minimum 1 -Maximum 9999)", "Experimental samples", "The 'merchandise'", 
+        "A suspiciously heavy $($shippingstuff.ToLower())", "The $($shippingstuff.ToLower()) of dreams", "The CEO's 'private' $($shippingstuff.ToLower())", "A $($shippingstuff.ToLower()) emitting low-frequency humming",
+        "The prototype", "An unmarked black $($shippingstuff.ToLower())", "A $($shippingstuff.ToLower()) of vintage mannequins", "The 'non-hazardous' (mostly) sludge",
+        "A crate labeled 'DO NOT EAT'", "The office's backup supply of snacks", "A collection of antique accordions",
+        "The diplomatic pouch", "Box #666", "A frozen block of unknown origin", "The shipment of rubber ducks", "The gravity-defying cube"
+    )
+    $status        = @(
+        "is currently", "is definitely not", "has been legally declared", "appears to be", "is technically", 
+        "is stubbornly remaining", "was accidentally classified as", "is vibrating into", "has been temporarily promoted to",
+        "is officially haunting", "is masquerading as", "is theoretically", "is slowly becoming", "is refusing to acknowledge",
+        "has been disavowed by", "is oscillating between", "is being guarded by", "is strictly prohibited from"
+    )
+    $actions       = @(
+        "vibrated", "soaked in mystery", "blessed by the night shift", "ignored for three days", "stacked precariously", 
+        "documented via interpretive dance", "used as a temporary coffee table", "marinated in warehouse humidity",
+        "scrubbed with a toothbrush", "shouted at by the manager", "covered in sticky notes", "photographed for evidence",
+        "balanced on a single toothpick", "baptized in spilled energy drink", "lost and then found in the rafters",
+        "integrated into the warehouse's ecosystem", "subjected to a stern talking-to", "wrapped in excessive bubble wrap"
+    )
+    $timing        = @(
+        "during the solar eclipse", "at the crack of noon", "while the supervisor was 'fishing'", "exactly at the wrong time", 
+        "during the Great Coffee Shortage of 2026", "at precisely 3:00 AM", "while the internet was down", 
+        "during the office holiday party", "right before the inspector arrived", "at the exact moment of a power surge",
+        "during a heated argument about pizza toppings", "in the middle of a heavy thunderstorm", "during a suspiciously quiet moment",
+        "while everyone was watching a cat video", "right as the forklift battery died"
+    )
+    $safety        = @(
+        "HANDLE WITH GLOVES", "DO NOT FEED", "KEEP UPRIGHT (mostly)", "FRAGILE LIKE MY EGO", "SMELL AT YOUR OWN RISK", 
+        "DO NOT STACK ON THE INTERN", "STAY 50 FEET BACK", "WEAR A HAZMAT SUIT", "AUTHORIZED PERSONNEL ONLY", 
+        "DO NOT LOOK DIRECTLY AT IT", "SHAKE WELL BEFORE OPENING", "DO NOT EXPOSE TO OXYGEN", "CONTAINS SHARP TRUTHS",
+        "AVOID EYE CONTACT", "SECURE WITH ADHESIVE TAPE AND PRAYER", "HIGHLY REACTIVE TO SARCASM"
+    )
+    $customs       = @(
+        "cleared by a very sleepy officer", "held for 'investigation'", "lost in the paperwork void", "bribed through with high-fives", 
+        "flagged for excessive weirdness", "re-routed via a dimension we don't recognize", "denied entry by a confused pigeon",
+        "approved by a robot named Gary", "missing 47 necessary stamps", "subjected to a 24-hour interrogation",
+        "currently being used as a paperweight in sector 7", "cleared but with a very judgmental look", "lost in the 'miscellaneous' pile",
+        "accidentally exported to the moon", "confiscated by the fashion police"
+    )
+    $warnings      = @(
+        "contains ghosts", "highly caffeinated", "slightly glowing", "unpredictable in rain", "honestly, just be careful", 
+        "may contain traces of glitter", "vibrates when spoken to", "prone to spontaneous combustion", "leaks concentrated sadness",
+        "attracts wild raccoons", "tastes like purple", "may cause mild hallucinations", "has its own gravitational pull",
+        "is sentient on Tuesdays", "sounds like a choir of bees", "is suspiciously cold to the touch"
+    )
+    $complaints    = @(
+        "The forklift is haunted.", "I'm not paid enough for this.", "Someone ate my labeled yogurt.", 
+        "The warehouse cat has claimed this as a bed.", "It's too early for this.", "The printer is screaming again.",
+        "The lights are flickering in Morse code.", "The breakroom microwave smells like burnt hair.", "My boots are squeaking.",
+        "The roof is leaking green liquid.", "Someone replaced the water in the cooler with tea.", "The walls are sweating.",
+        "I've forgotten what sunlight looks like.", "The vending machine took my last dollar.", "The radio only plays polka."
+    )
+    $sounds        = @(
+        "making a ticking sound", "whistling 'Despacito'", "purring loudly", "emitting a faint static noise", 
+        "occasionally shouting in Latin", "humming an 80s power ballad", "clucking like a nervous chicken",
+        "making a sound like tearing silk", "whispering secrets about the manager", "beeping in an irregular rhythm",
+        "thumping like a heartbeat", "giggling softly when moved", "echoing with the sound of distant waves"
+    )
+    $smells        = @(
+        "smelling faintly of wet dog", "scented like 'New Car' and regret", "smelling like a campfire in a rainstorm", 
+        "scented with expensive cologne and sulfur", "smelling like old library books", "smelling of ozone and ozone-adjacent things",
+        "scented with fresh cinnamon and fear", "smelling like a damp basement", "scented like a very old sandwich",
+        "smelling like 'The Ocean' (but the scary part)", "smelling like burnt toast and rubber"
+    )
+    $conditions    = @(
+        "under a leaking roof", "in a localized gravity anomaly", "surrounded by suspicious pigeons", 
+        "while covered in 'Property of Area 51' stickers", "in a puddle of unknown blue liquid", "resting on a bed of hay",
+        "inside a giant Ziploc bag", "while being used as a doorstop", "hidden behind a stack of empty pallets",
+        "in the path of a very aggressive Roomba", "suspended by thin pieces of dental floss", "surrounded by safety cones"
+    )
+    $signature     = @(
+        "- Signed, Steve ($(Get-Random -InputObject @('day','night'))) shift", "- Logged by the AI that's replacing us", 
+        "- Per the request of the Shadow Government", "- Sent from my Smart-Toaster", "- Dictated but not read",
+        "- From the desk of a very tired human", "- Automatically generated by the Chaos Protocol", 
+        "- Verified by the Warehouse Gremlin", "- XOXO, Logistics Dept.", "- Written in the dark"
+    )
 
-    $Notes3 = @(
-                "shall be", "shall not be", "will be", "will not be", "are", "are not", "were", "were not", "should be", "should not be"
-               )
+    # --- Structural Templates ---
+    $templates = @(
+        { "$((Get-Random $subjects)) $((Get-Random $status)) $((Get-Random $actions)) $((Get-Random $timing))." },
+        { "Alert: $((Get-Random $subjects)) is $((Get-Random $sounds)) and $((Get-Random $smells)). $((Get-Random $safety))!" },
+        { "$((Get-Random $complaints)) $((Get-Random $subjects)) $((Get-Random $status)) $((Get-Random $conditions))." },
+        { "Reference #$((Get-Random -Minimum 1 -Maximum 9999)): $((Get-Random $subjects)) was $((Get-Random $customs)) $((Get-Random $timing)). $((Get-Random $signature))." },
+        { 
+            $para = "$((Get-Random $subjects)) $((Get-Random $status)) $((Get-Random $actions)) " +
+                    "$((Get-Random $conditions)). Note: it is $((Get-Random $sounds)). " +
+                    "Customs update: $((Get-Random $customs)). " +
+                    "$((Get-Random $safety)). $((Get-Random $warnings)). $((Get-Random $signature))."
+            $para
+        }
+    )
 
-    $Notes4 = @(
-                "listed", "weighted", "sealed", "packaged", "refrigerated", "unrefrigerated", "described", "identified", "screened", "inspected", "authorized",
-                "cleared", "supervised", "monitored", "tracked", "documented", "perishable"
-               )
+    $result = &(Get-Random -InputObject $templates)
 
-    $Notes5 = @(
-                "on loading", "on unloading", "on arrival", "on departure", "on inspection", "after inspection", "before inspection", "during inspection",
-                "uppon customs arrival", "before customs arrival", "inform customs", "GPS monitored", "freight is controlled",
-                "before arrival", "after arrival", "check the instructions", "contact the head office", "observe the preservation"
-               )
-
-    $Notes6 = @(
-                "exercise attention", "do not open", "keep away from direct sunglight", "keep refrigerated", "storage and stability to be followed",
-                "handle with care", "avoid stacking", "maintain under prescribed temperature", "do not stack", "keep refrigerated at all times",
-                "inspection will be guided", "to hold for inspection", "to remain under supervision", "contact customs", "do not contact customs", " "
-               )
-
-    $Notes7 = @(
-                "package count by SKU",
-                "for collection or prepaid",
-                "total weight, cube, carton, and pallet count"
-                "transport is monitored",
-                "transport is supervised",
-                "proceed directly to customs",
-                "do not leave customs",
-                "free from customs",
-                "stay under customs custody",
-                "should not remain under customs custody",
-                "mark freight terms",
-                "certify and states the information",
-                "may be imposed for marking",
-                "tracking subject to further reschedule",
-                "unloading may be followed by inspection",
-                "dot not leave customs",
-                "customs cleared",
-                "customs will determine inspection"
-                "fragile shipment upon arrival",
-                "follows government authorization",
-                "additional information attached",
-                "assess the risks and eliminate or minimise them",
-                "use and store safely",
-                "dangerous",
-                "radioactive",
-                "samples",
-                " "
-               )
-
-
-    $Notes8 = @(
-                "perishable", "sensitive", "flamable", "dangerous", "radioactive", "electrical", "military grade",
-                "concealed", "self-contained", "hazardous", "enclosed", "unsafe", "frozen", "pharmaceuticals", " "
-               )
-
-
-    $comments      = $null
-    $comments_node = $null
-
-    switch ( (Get-Random -Minimum 1 -Maximum 9) )
+    if ((Get-Random -Minimum 1 -Maximum 100) -le 15) 
     {
-        #
-        # sentences by numbers of words: 8, 7, 6, 5, and 4
-        #
-
-        {$_ -eq 8}
-        {
-            $comments = (Get-Random -InputObject $Notes1) + " " + `
-                        (Get-Random -InputObject $Notes2) + " " + `
-                        (Get-Random -InputObject $Notes3) + " " + `
-                        (Get-Random -InputObject $Notes4) + " - " + `
-                        (Get-Random -InputObject $Notes5)
-
-
-            $comments_node = (Get-Random -InputObject $Notes6)
-
-            if ($comments_node -ne " ")
-            {
-                $comments += ", $comments_node"
-            }
-
-            $comments_node = (Get-Random -InputObject $Notes7)
-
-            if ($comments_node -ne " ")
-            {
-                $comments += " - $comments_node"
-            }
-
-            $comments_node = (Get-Random -InputObject $Notes8)
-
-            if ($comments_node -ne " ")
-            {
-                $comments += " - $comments_node"
-            }
-        }
-
-        {$_ -eq 7}
-        {
-            $comments = (Get-Random -InputObject $Notes1) + " " + `
-                        (Get-Random -InputObject $Notes2) + " " + `
-                        (Get-Random -InputObject $Notes3) + " " + `
-                        (Get-Random -InputObject $Notes4) + " - " + `
-                        (Get-Random -InputObject $Notes5)
-
-            $comments_node = (Get-Random -InputObject $Notes6)
-
-            if ($comments_node -ne " ")
-            {
-                $comments += ", $comments_node"
-            }
-
-            $comments_node = (Get-Random -InputObject $Notes7)
-
-            if ($comments_node -ne " ")
-            {
-                $comments += " - $comments_node"
-            }
-        }
-
-        {$_ -eq 6}
-        {
-            $comments = (Get-Random -InputObject $Notes1) + " " + `
-                        (Get-Random -InputObject $Notes2) + " " + `
-                        (Get-Random -InputObject $Notes3) + " " + `
-                        (Get-Random -InputObject $Notes4) + " - " + `
-                        (Get-Random -InputObject $Notes5)
-
-            $comments_node = (Get-Random -InputObject $Notes6)
-
-            if ($comments_node -ne " ")
-            {
-                $comments += ", $comments_node"
-            }
-        }
-
-        {$_ -eq 5}
-        {
-            $comments = (Get-Random -InputObject $Notes1) + " " + `
-                        (Get-Random -InputObject $Notes2) + " " + `
-                        (Get-Random -InputObject $Notes3) + " " + `
-                        (Get-Random -InputObject $Notes4) + " - " + `
-                        (Get-Random -InputObject $Notes5)
-        }
-
-        {$_ -eq 4}
-        {
-            $comments = (Get-Random -InputObject $Notes1) + " " + `
-                        (Get-Random -InputObject $Notes2) + " " + `
-                        (Get-Random -InputObject $Notes3) + " " + `
-                        (Get-Random -InputObject $Notes4)
-        }
-
-        #
-        # complex creations - random counts
-        #
-
-        {$_ -eq 3}
-        {
-            $comments = (Get-Random -InputObject $Notes2) + " " + `
-                        (Get-Random -InputObject $Notes4)
-        }
-
-        {$_ -eq 2}
-        {
-            $comments = (Get-Random -InputObject $Notes2) + " " + `
-                        (Get-Random -InputObject $Notes4)
-
-            $comments_node = (Get-Random -InputObject $Notes8)
-
-            if ($comments_node -ne " ")
-            {
-                $comments += " - $comments_node"
-            }
-
-        }
-
-        {$_ -eq 1}
-        {
-            $comments = (Get-Random -InputObject $Notes2) + " " + `
-                        (Get-Random -InputObject $Notes4)
-
-            $comments_node = (Get-Random -InputObject $Notes8)
-
-            if ($comments_node -ne " ")
-            {
-                $comments += " - $comments_node"
-            }
-
-        }
+        $result += " (P.S. $((Get-Random $complaints)))"
     }
 
-    return $comments
+    return $result
 }
 
 #endregion ══════════════════════════════════════════════════════════════════════════════════════════════════════
@@ -655,7 +558,7 @@ $FreightTerms = @(
 #region ══════════════════════════════════════════════════════════════════════════════════════[ Graph Token, Site, List, and Users ]
 
 $Token_Body = @{
-                    "tenant"        = $settings.tenant
+                    "tenant"        = $settings.tenant_domain
                     "grant_type"    = "client_credentials"
                     "client_id"     = $settings.client_id
                     "client_secret" = $settings.client_secret
@@ -674,9 +577,11 @@ $Token_ExpirationTime = (Get-Date).AddSeconds($Token_GraphAPI.expires_in)
 
 #   Site ID for $settings.SPORootSite
 
-$requestSite = Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/sites/$($settings.SPORootSite):/sites/$($settings.SPOSite)" `
-                                 -Headers @{"Authorization" = "Bearer $($Token_GraphAPI.access_token)"} `
-                                 -ContentType "application/json; charset=utf-8" -Method GET
+$requestSite = Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/sites/$($settings.SPORootSite):/sites/$($settings.SPOSite)"  `
+                                 -Headers @{"Authorization" = "Bearer $($Token_GraphAPI.access_token)"}                              `
+                                 -ContentType "application/json; charset=utf-8"                                                      `
+                                 -Method GET
+
 
 if ($null -ne $requestSite)
 {
@@ -690,9 +595,10 @@ else
 
 #   the List ID for $settings.SPOList
 
-$requestList = Invoke-RestMethod -Uri  "https://graph.microsoft.com/v1.0/sites/$($siteId)/lists/$($settings.SPOList)" `
-                                 -Headers @{"Authorization" = "Bearer $($Token_GraphAPI.access_token)"} `
-                                 -ContentType "application/json; charset=utf-8" -Method GET
+$requestList = Invoke-RestMethod -Uri  "https://graph.microsoft.com/v1.0/sites/$($siteId)/lists/$($settings.SPOList)"  `
+                                 -Headers @{"Authorization" = "Bearer $($Token_GraphAPI.access_token)"}                `
+                                 -ContentType "application/json; charset=utf-8"                                        `
+                                 -Method GET
 
 if ($null -ne $requestList)
 {
@@ -720,11 +626,12 @@ else
 
 
 $requestUsersList = Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/sites/$($siteID)/lists?`$filter=DisplayName eq 'User Information List'"  `
-                                      -Headers @{"Authorization" = "Bearer $($Token_GraphAPI.access_token)"}  `
-                                      -ContentType "application/json; charset=utf-8" -Method GET
+                                      -Headers @{"Authorization" = "Bearer $($Token_GraphAPI.access_token)"}                                          `
+                                      -ContentType "application/json; charset=utf-8"                                                                  `
+                                      -Method GET
 
 
-if ($requestUsersList -ne $null)
+if ($null -ne $requestUsersList)
 {
     $usersListID = $requestUsersList.value.id
 }
@@ -737,9 +644,11 @@ else
 #   Getting the list of users from the SharePoint User Information List for the given site
 
 $requestUsers = Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/sites/$($siteID)/lists/$($usersListID)/items?`$expand=fields(`$select=id,IsSiteAdmin,Deleted,SipAddress)"  `
-                                  -Headers @{"Authorization" = "Bearer $($Token_GraphAPI.access_token)"}  `
-                                  -ContentType "application/json; charset=utf-8" -Method GET
+                                  -Headers @{"Authorization" = "Bearer $($Token_GraphAPI.access_token)"}                                                                            `
+                                  -ContentType "application/json; charset=utf-8"                                                                                                    `
+                                  -Method GET
 
+#
 #   The filter below removes the following:
 #
 #   IsSiteAdmin:   SPO site admins (my preference but you can include them if you want)
@@ -748,6 +657,7 @@ $requestUsers = Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/sites/$
 #                  it is redudant to include "Fields/ContentType -eq "Person", filtering the data with SipAddress will limit the results only to user accounts
 #
 #   The final product is just a list of IDs, we won't need anything else when creating new items
+#
 
 $Users = $requestUsers.value.fields | ? { $_.IsSiteAdmin -eq $false -and $_.Deleted -eq $false -and $_.SipAddress  -ne $null } | select id
 
@@ -969,10 +879,10 @@ for ($loop = 1; $loop -le $RunSettings_TotalRecords; $loop++)
                 if (!$RunSettings_SoftRun)
                 {
                     $request = $null
-                    $request = Invoke-RestMethod -Uri 'https://graph.microsoft.com/v1.0/$batch' `
+                    $request = Invoke-RestMethod -Uri 'https://graph.microsoft.com/v1.0/$batch'                          `
                                                  -Headers @{"Authorization" = "Bearer $($Token_GraphAPI.access_token)"}  `
-                                                 -ContentType "application/json; charset=utf-8"  `
-                                                 -Body $payload  `
+                                                 -ContentType "application/json; charset=utf-8"                          `
+                                                 -Body $payload                                                          `
                                                  -Method Post
 
                     if ($request -eq $null)

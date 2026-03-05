@@ -1,30 +1,4 @@
-﻿<#
-
-    SharePoint Add-ins
-    ==================
-
-
-    Registering a new application:    https://contoso.sharepoint.com/_layouts/15/AppRegNew.aspx
-
-    List registered applications:     https://contoso.sharepoint.com/_layouts/15/AppPrincipals.aspx
-
-    Review registered application:    https://contoso.sharepoint.com/_layouts/15/AppInv.aspx
-
-
-    Permissions Sample:
-
-    <AppPermissionRequests AllowAppOnlyPolicy="true">
-       <AppPermissionRequest Scope="http://sharepoint/content/tenant" Right="FullControl" />
-    </AppPermissionRequests>
-
-    <AppPermissionRequests AllowAppOnlyPolicy="true">
-       <AppPermissionRequest Scope="http://sharepoint/content/sitecollection" Right="FullControl" />
-    </AppPermissionRequests>
-
-#>
-
-
-clear-host
+﻿clear-host
 
 if ( (Test-Path -Path ".\settings.json") -eq $false )
 {
@@ -36,12 +10,14 @@ else
     $settings = Get-Content -Path .\settings.json | ConvertFrom-Json
 }
 
-Connect-PnPOnline -Url "https://$($settings.SPORootSite)/sites/$($settings.SPOSite)" `
-                  -ClientId     $($settings.SPOAddinClientId)  `
-                  -ClientSecret $($settings.SPOAddinClientSecret)  `
-                  -WarningAction Ignore
+Connect-PnPOnline -Url                  "https://$($settings.SPORootSite)/sites/$($settings.SPOSite)" `
+                  -ClientId             "$($settings.client_id)"                                      `
+                  -CertificatePassword  (ConvertTo-SecureString -String $($settings.certificate_password) -AsPlainText -Force)    `
+                  -CertificatePath      ".\$($settings.entra_applicationname).pfx"                                                      `
+                  -Tenant               $settings.tenant_domain
 
-if (Get-PnpList -Identity  "$($settings.SPOList)")
+
+if (Get-PnpList -Identity  "$($settings.SPOList)" -ThrowExceptionIfListNotFound:$false -ErrorAction SilentlyContinue)
 {
     Remove-PnPList -Identity "$($settings.SPOList)" -Force:$true -Recycle:$true
 }
@@ -366,89 +342,89 @@ $AirlineNames = @(
                     "WestJet Cargo"
             )
 
-$VesselName = @(
-                "Antwerpen Express",
-                "Basle Express",
-                "Budapest Express",
-                "Cosco Belgium",
-                "Cosco Houston",
-                "Cosco Japan",
-                "Cosco Oceania",
-                "Cosco Pacific",
-                "Cosco Taicang",
-                "Cscl Bohai Sea",
-                "Cscl Jupiter",
-                "Cscl Mars",
-                "Cscl Mercury",
-                "Cscl Nepture",
-                "Cscl Saturn",
-                "Cscl Star",
-                "Cscl Uranus",
-                "Cscl Venus",
-                "Cyprus Cape Martin",
-                "Ebba Maersk",
-                "Edith Maersk",
-                "Eleonora Maersk",
-                "Elly Maersk",
-                "Emma Maersk",
-                "Essen Express",
-                "Estelle Maersk",
-                "Eugen Maersk",
-                "Evelyn Maersk",
-                "France CMA CGM Fidelio",
-                "Germany CMA CGM Orfeo",
-                "Hamburg Express",
-                "Hong Kong Express",
-                "Leverkusen Express",
-                "Liberia Aegiali",
-                "Liberia As Rafaela",
-                "Liberia Bomar Rossi",
-                "Liberia Cala Paguro",
-                "Liberia E R Felixstowe",
-                "Liberia E R France",
-                "Liberia Emirates Dana",
-                "Liberia Emirates Wafa",
-                "Liberia Emirates Wasl",
-                "Liberia Gsl Africa",
-                "Liberia Gsl Valerie",
-                "Liberia Hansa Breitenburg",
-                "Liberia Ikaria",
-                "Ludwigshafen Express",
-                "Madrid Express",
-                "Malta A Idefix",
-                "Malta Adrian Schulte",
-                "Malta Cma Cgm Coral",
-                "Marshall Islands Baltic Bridge",
-                "Marshall Islands Baltic West",
-                "Marshall Islands Cape Fawley",
-                "Msc Filomena",
-                "Nagoya Express",
-                "New York Express",
-                "Panama Akinada Bridge",
-                "Panama Cosco Africa",
-                "Panama Hakata Seoul",
-                "Paris Express",
-                "Portugal Actuaria",
-                "Portugal Bernadette",
-                "Portugal Conti Courage",
-                "Shanghai Express",
-                "Singapore Apl Columbus",
-                "Singapore Apl Jeddah",
-                "Singapore Asiatic King",
-                "Singapore Asiatic Moon",
-                "Singapore Asiatic Neptune",
-                "Singapore Ever United",
-                "Singapore Green Earth",
-                "Singapore Green Pole",
-                "Singapore Green Sea",
-                "Singapore Interasia Heritage",
-                "Singapore Jitra Bhum",
-                "South Korea Hyundai Goodwill",
-                "Southampton Express",
-                "Thailand Jaru Bhum",
-                "Ulsan Express",
-                "Vienna Express"
-               )
+$ShippingNames = @(
+                    "Antwerpen Express",
+                    "Basle Express",
+                    "Budapest Express",
+                    "Cosco Belgium",
+                    "Cosco Houston",
+                    "Cosco Japan",
+                    "Cosco Oceania",
+                    "Cosco Pacific",
+                    "Cosco Taicang",
+                    "Cscl Bohai Sea",
+                    "Cscl Jupiter",
+                    "Cscl Mars",
+                    "Cscl Mercury",
+                    "Cscl Nepture",
+                    "Cscl Saturn",
+                    "Cscl Star",
+                    "Cscl Uranus",
+                    "Cscl Venus",
+                    "Cyprus Cape Martin",
+                    "Ebba Maersk",
+                    "Edith Maersk",
+                    "Eleonora Maersk",
+                    "Elly Maersk",
+                    "Emma Maersk",
+                    "Essen Express",
+                    "Estelle Maersk",
+                    "Eugen Maersk",
+                    "Evelyn Maersk",
+                    "France CMA CGM Fidelio",
+                    "Germany CMA CGM Orfeo",
+                    "Hamburg Express",
+                    "Hong Kong Express",
+                    "Leverkusen Express",
+                    "Liberia Aegiali",
+                    "Liberia As Rafaela",
+                    "Liberia Bomar Rossi",
+                    "Liberia Cala Paguro",
+                    "Liberia E R Felixstowe",
+                    "Liberia E R France",
+                    "Liberia Emirates Dana",
+                    "Liberia Emirates Wafa",
+                    "Liberia Emirates Wasl",
+                    "Liberia Gsl Africa",
+                    "Liberia Gsl Valerie",
+                    "Liberia Hansa Breitenburg",
+                    "Liberia Ikaria",
+                    "Ludwigshafen Express",
+                    "Madrid Express",
+                    "Malta A Idefix",
+                    "Malta Adrian Schulte",
+                    "Malta Cma Cgm Coral",
+                    "Marshall Islands Baltic Bridge",
+                    "Marshall Islands Baltic West",
+                    "Marshall Islands Cape Fawley",
+                    "Msc Filomena",
+                    "Nagoya Express",
+                    "New York Express",
+                    "Panama Akinada Bridge",
+                    "Panama Cosco Africa",
+                    "Panama Hakata Seoul",
+                    "Paris Express",
+                    "Portugal Actuaria",
+                    "Portugal Bernadette",
+                    "Portugal Conti Courage",
+                    "Shanghai Express",
+                    "Singapore Apl Columbus",
+                    "Singapore Apl Jeddah",
+                    "Singapore Asiatic King",
+                    "Singapore Asiatic Moon",
+                    "Singapore Asiatic Neptune",
+                    "Singapore Ever United",
+                    "Singapore Green Earth",
+                    "Singapore Green Pole",
+                    "Singapore Green Sea",
+                    "Singapore Interasia Heritage",
+                    "Singapore Jitra Bhum",
+                    "South Korea Hyundai Goodwill",
+                    "Southampton Express",
+                    "Thailand Jaru Bhum",
+                    "Ulsan Express",
+                    "Vienna Express"
+                  )
 
 $FreightTerms = @(
                    "Prepaid",
@@ -473,301 +449,290 @@ Set-PnPField -List "$($settings.SPOList)" -Identity Title -Values @{Required=$fa
 
 # ════ Item Type
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Item Type" -InternalName "ItemType" -Type Choice -Choices $ItemType -Required -AddToDefaultView -Group "Main"
+$fieldItemType = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Item Type" -InternalName "ItemType" -Type Choice -Choices $ItemType -Required -AddToDefaultView -Group "Main"
 
-    $field
-    $field.DefaultValue = "Air Fryer"
-    $field.Update()
-    $field.Context.ExecuteQuery()
+    $fieldItemType
+    $fieldItemType.DefaultValue = "Air Fryer"
+    $fieldItemType.Update()
+    $fieldItemType.Context.ExecuteQuery()
 
 
 # ════ Item SKU
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Item SKU"  -InternalName "ItemSKU" -Type Text -AddToDefaultView -Group "Main"
+$fieldItemSKU = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Item SKU"  -InternalName "ItemSKU" -Type Text -AddToDefaultView -Group "Main"
 
-    $field
-    Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id  -Values @{MaxLength=36}
+    $fieldItemSKU
+    Set-PnPField -List "$($settings.SPOList)" -Identity $fieldItemSKU.Id  -Values @{MaxLength=36}
 
 
 # ════ Sector
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Sector" -InternalName "Sector" -Type Choice -Choices $Sector -Required -AddToDefaultView -Group "Main"
+$fieldSector = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Sector" -InternalName "Sector" -Type Choice -Choices $Sector -Required -AddToDefaultView -Group "Main"
 
-    $field
-    $field.DefaultValue = "Private"
-    $field.Update()
-    $field.Context.ExecuteQuery()
+    $fieldSector
+    $fieldSector.DefaultValue = "Private"
+    $fieldSector.Update()
+    $fieldSector.Context.ExecuteQuery()
 
 
 # ════ Confidential
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Confidential" -InternalName "Confidential" -Type Boolean -Required -AddToDefaultView -Group "Main"
+$fieldConfidential = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Confidential" -InternalName "Confidential" -Type Boolean -Required -AddToDefaultView -Group "Main"
 
-    $field
-    $field.DefaultValue = 0
-    $field.Update()
-    $field.Context.ExecuteQuery()
+    $fieldConfidential
+    $fieldConfidential.DefaultValue = 0
+    $fieldConfidential.Update()
+    $fieldConfidential.Context.ExecuteQuery()
 
 
 # ════ Order ID
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Order ID" -InternalName "OrderID" -Type Number -Required -AddToDefaultView -Group "Main"
+$fieldOrderID = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Order ID" -InternalName "OrderID" -Type Number -Required -AddToDefaultView -Group "Main"
 
-    $field
-    [xml]$schema = $field.SchemaXml
-    $schema.Field.SetAttribute("Decimals", "0")
-    Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
+    $fieldOrderID
+    [xml]$schemaOrderID = $fieldOrderID.SchemaXml
+    $schemaOrderID.Field.SetAttribute("Decimals", "0")
+    Set-PnPField -List "$($settings.SPOList)" -Identity $fieldOrderID.Id -Values @{SchemaXml=$schemaOrderID.OuterXml} -UpdateExistingLists
 
 
 # ════ Order Priority
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Order Priority" -InternalName "OrderPriority" -Type Choice -Choices $OrderPriority -Required -AddToDefaultView -Group "Main"
+$fieldOrderPriority = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Order Priority" -InternalName "OrderPriority" -Type Choice -Choices $OrderPriority -Required -AddToDefaultView -Group "Main"
 
-    $field
-    $field.DefaultValue = "Low"
-    $field.Update()
-    $field.Context.ExecuteQuery()
+    $fieldOrderPriority
+    $fieldOrderPriority.DefaultValue = "Low"
+    $fieldOrderPriority.Update()
+    $fieldOrderPriority.Context.ExecuteQuery()
 
 
 # ════ Order Date
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Order Date" -InternalName "OrderDate" -Type DateTime -Required -AddToDefaultView -Group "Main"
+$fieldOrderDate = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Order Date" -InternalName "OrderDate" -Type DateTime -Required -AddToDefaultView -Group "Main"
 
-    $field
-    [xml]$schema = $field.SchemaXml
-    $schema.Field.SetAttribute("Format","DateOnly")
-    Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
+    $fieldOrderDate
+    [xml]$schemaOrderDate = $fieldOrderDate.SchemaXml
+    $schemaOrderDate.Field.SetAttribute("Format","DateOnly")
+    Set-PnPField -List "$($settings.SPOList)" -Identity $fieldOrderDate.Id -Values @{SchemaXml=$schemaOrderDate.OuterXml} -UpdateExistingLists
 
-    $filed = Get-PnPField -List "$($settings.SPOList)" -Identity "OrderDate"
-    $field.DefaultFormula = "=NOW()"
-    $field.Update()
-    $field.Context.ExecuteQuery()
+    $fieldOrderDate = Get-PnPField -List "$($settings.SPOList)" -Identity "OrderDate"
+    $fieldOrderDate.DefaultFormula = "=NOW()"
+    $fieldOrderDate.Update()
+    $fieldOrderDate.Context.ExecuteQuery()
 
 
 # ════ Units Sold
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Units Sold" -InternalName "UnitsSold" -Type Currency -Required -AddToDefaultView -Group "Main"
+$fieldUnitsSold = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Units Sold" -InternalName "UnitsSold" -Type Currency -Required -AddToDefaultView -Group "Main"
 
-    #$field
-    #[xml]$schema = $field.SchemaXml
-    #$schema.Field.SetAttribute("Decimals", "0")
-    #Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
-
-    #$field = Get-PnPField -List "$($settings.SPOList)" -Identity "UnitsSold"
-
-    $field
-    $field.DefaultValue = 0
-    $field.Update()
-    $field.Context.ExecuteQuery()
+    $fieldUnitsSold
+    $fieldUnitsSold.DefaultValue = 0
+    $fieldUnitsSold.Update()
+    $fieldUnitsSold.Context.ExecuteQuery()
 
 
 # ════ Unit Price
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Unit Price" -InternalName "UnitPrice" -Type Currency -Required -AddToDefaultView -Group "Main"
+$fieldUnitPrice = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Unit Price" -InternalName "UnitPrice" -Type Currency -Required -AddToDefaultView -Group "Main"
 
-    $field
-    $field.DefaultValue = 0
-    $field.Update()
-    $field.Context.ExecuteQuery()
+    $fieldUnitPrice
+    $fieldUnitPrice.DefaultValue = 0
+    $fieldUnitPrice.Update()
+    $fieldUnitPrice.Context.ExecuteQuery()
 
 
 # ════ Unit Cost
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Unit Cost" -InternalName "UnitCost" -Type Currency -Required -AddToDefaultView -Group "Main"
+$fieldUnitCost = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Unit Cost" -InternalName "UnitCost" -Type Currency -Required -AddToDefaultView -Group "Main"
 
-    $field
-    $field.DefaultValue = 0
-    $field.Update()
-    $field.Context.ExecuteQuery()
+    $fieldUnitCost
+    $fieldUnitCost.DefaultValue = 0
+    $fieldUnitCost.Update()
+    $fieldUnitCost.Context.ExecuteQuery()
 
 
 # ════ Total Revenue
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Total Revenue" -InternalName "TotalRevenue" -Type Currency -Required -AddToDefaultView -Group "Main"
+$fieldTotalRevenue = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Total Revenue" -InternalName "TotalRevenue" -Type Currency -Required -AddToDefaultView -Group "Main"
 
-    $field
-    $field.DefaultValue = 0
-    $field.Update()
-    $field.Context.ExecuteQuery()
-
-    #$field
-    #$field.DefaultFormula = "= [UnitsSold] * [UnitPrice]"
-    #$field.Update()
-    #$field.Context.ExecuteQuery()
+    $fieldTotalRevenue
+    $fieldTotalRevenue.DefaultValue = 0
+    $fieldTotalRevenue.Update()
+    $fieldTotalRevenue.Context.ExecuteQuery()
 
 
 # ════ Total Cost
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Total Cost" -InternalName "TotalCost" -Type Currency -Required -AddToDefaultView -Group "Main"
+$fieldTotalCost = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Total Cost" -InternalName "TotalCost" -Type Currency -Required -AddToDefaultView -Group "Main"
 
-    $field
-    $field.DefaultValue = 0
-    $field.Update()
-    $field.Context.ExecuteQuery()
+    $fieldTotalCost
+    $fieldTotalCost.DefaultValue = 0
+    $fieldTotalCost.Update()
+    $fieldTotalCost.Context.ExecuteQuery()
 
 
 # ════ Total Profit
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Total Profit" -InternalName "TotalProfit" -Type Currency -Required -AddToDefaultView -Group "Main"
+$fieldTotalProfit = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Total Profit" -InternalName "TotalProfit" -Type Currency -Required -AddToDefaultView -Group "Main"
 
-    $field
-    $field.DefaultValue = 0
-    $field.Update()
-    $field.Context.ExecuteQuery()
+    $fieldTotalProfit
+    $fieldTotalProfit.DefaultValue = 0
+    $fieldTotalProfit.Update()
+    $fieldTotalProfit.Context.ExecuteQuery()
 
 
 # ════ Containers
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Containers" -InternalName "Containers" -Type Number -Required -AddToDefaultView -Group "Main"
+$fieldContainers = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Containers" -InternalName "Containers" -Type Number -Required -AddToDefaultView -Group "Main"
 
-    $field
+    $fieldContainers
+    [xml]$schemaContainers = $fieldContainers.SchemaXml
+    $schemaContainers.Field.SetAttribute("Decimals", "0")
+    Set-PnPField -List "$($settings.SPOList)" -Identity $fieldContainers.Id -Values @{SchemaXml=$schemaContainers.OuterXml} -UpdateExistingLists
 
-    [xml]$schema = $field.SchemaXml
-    $schema.Field.SetAttribute("Decimals", "0")
-    Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
-
-    $field = Get-PnPField -List "$($settings.SPOList)" -Identity "Containers"
-    $field.DefaultValue = 0
-    $field.Update()
-    $field.Context.ExecuteQuery()
+    $fieldContainers = Get-PnPField -List "$($settings.SPOList)" -Identity "Containers"
+    $fieldContainers.DefaultValue = 0
+    $fieldContainers.Update()
+    $fieldContainers.Context.ExecuteQuery()
 
 
 # ════ Freight Terms
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Freight Terms" -InternalName "FreightTerms" -Type Choice -Choices $FreightTerms -Required -AddToDefaultView -Group "Main"
+$fieldFreightTerms = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Freight Terms" -InternalName "FreightTerms" -Type Choice -Choices $FreightTerms -Required -AddToDefaultView -Group "Main"
 
-    $field
-    $field.DefaultValue = "Elsewhere"
-    $field.Update()
-    $field.Context.ExecuteQuery()
+    $fieldFreightTerms
+    $fieldFreightTerms.DefaultValue = "Elsewhere"
+    $fieldFreightTerms.Update()
+    $fieldFreightTerms.Context.ExecuteQuery()
 
 
 # ════ Sales Channel
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Sales Channel" -InternalName "SalesChannel" -Type Choice -Choices $SalesChannel -Required -AddToDefaultView -Group "Main"
+$fieldSalesChannel = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Sales Channel" -InternalName "SalesChannel" -Type Choice -Choices $SalesChannel -Required -AddToDefaultView -Group "Main"
 
-    $field
-    $field.DefaultValue = "Sales Rep"
-    $field.Update()
-    $field.Context.ExecuteQuery()
+    $fieldSalesChannel
+    $fieldSalesChannel.DefaultValue = "Sales Rep"
+    $fieldSalesChannel.Update()
+    $fieldSalesChannel.Context.ExecuteQuery()
 
 
 # ════ Sales Coordinator
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Sales Coordinator" -InternalName "SalesCoordinator"  -Type User -AddToDefaultView -Group "Main"
+$fieldSalesCoordinator = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Sales Coordinator" -InternalName "SalesCoordinator"  -Type User -AddToDefaultView -Group "Main"
 
-    $field
-    [xml]$schema = $field.SchemaXml
-    $schema.Field.SetAttribute("UserDisplayOptions","NamePhoto")
-    Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
+    $fieldSalesCoordinator
+    [xml]$schemaSalesCoordinator = $fieldSalesCoordinator.SchemaXml
+    $schemaSalesCoordinator.Field.SetAttribute("UserDisplayOptions","NamePhoto")
+    Set-PnPField -List "$($settings.SPOList)" -Identity $fieldSalesCoordinator.Id -Values @{SchemaXml=$schemaSalesCoordinator.OuterXml} -UpdateExistingLists
 
 
 # ════ Sales Person
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Sales Person" -InternalName "SalesPerson" -Type User -AddToDefaultView -Group "Main"
+$fieldSalesPerson = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Sales Person" -InternalName "SalesPerson" -Type User -AddToDefaultView -Group "Main"
 
-    $field
-    [xml]$schema = $field.SchemaXml
-    $schema.Field.SetAttribute("UserDisplayOptions","NamePhoto")
-    Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
+    $fieldSalesPerson
+    [xml]$schemaSalesPerson = $fieldSalesPerson.SchemaXml
+    $schemaSalesPerson.Field.SetAttribute("UserDisplayOptions","NamePhoto")
+    Set-PnPField -List "$($settings.SPOList)" -Identity $fieldSalesPerson.Id -Values @{SchemaXml=$schemaSalesPerson.OuterXml} -UpdateExistingLists
 
 
 # ════ Payment Coordinator
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Payment Coordinator" -InternalName "PaymentCoordinator" -Type User -AddToDefaultView -Group "Main"
+$fieldPaymentCoordinator = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Payment Coordinator" -InternalName "PaymentCoordinator" -Type User -AddToDefaultView -Group "Main"
 
-    $field
-    [xml]$schema = $field.SchemaXml
-    $schema.Field.SetAttribute("UserDisplayOptions","NamePhoto")
-    Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
+    $fieldPaymentCoordinator
+    [xml]$schemaPaymentCoordinator = $fieldPaymentCoordinator.SchemaXml
+    $schemaPaymentCoordinator.Field.SetAttribute("UserDisplayOptions","NamePhoto")
+    Set-PnPField -List "$($settings.SPOList)" -Identity $fieldPaymentCoordinator.Id -Values @{SchemaXml=$schemaPaymentCoordinator.OuterXml} -UpdateExistingLists
 
 
 # ════ Shipping Foreman
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Shipping Foreman" -InternalName "ShippingForeman" -Type User -AddToDefaultView -Group "Main"
+$fieldShippingForeman = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Shipping Foreman" -InternalName "ShippingForeman" -Type User -AddToDefaultView -Group "Main"
 
-    $field
-    [xml]$schema = $field.SchemaXml
-    $schema.Field.SetAttribute("UserDisplayOptions","NamePhoto")
-    Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
+    $fieldShippingForeman
+    [xml]$schemaShippingForeman = $fieldShippingForeman.SchemaXml
+    $schemaShippingForeman.Field.SetAttribute("UserDisplayOptions","NamePhoto")
+    Set-PnPField -List "$($settings.SPOList)" -Identity $fieldShippingForeman.Id -Values @{SchemaXml=$schemaShippingForeman.OuterXml} -UpdateExistingLists
 
 
 # ════ Shipping Insured
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Shipping Insured" -InternalName "ShippingInsured" -Type Boolean -Required -AddToDefaultView -Group "Main"
+$fieldShippingInsured = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Shipping Insured" -InternalName "ShippingInsured" -Type Boolean -Required -AddToDefaultView -Group "Main"
 
-    $field
-    $field.DefaultValue = 0
-    $field.Update()
-    $field.Context.ExecuteQuery()
+    $fieldShippingInsured
+    $fieldShippingInsured.DefaultValue = 0
+    $fieldShippingInsured.Update()
+    $fieldShippingInsured.Context.ExecuteQuery()
 
 
 # ════ Shipping Date
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Shipping Date" -InternalName "ShippingDate" -Type DateTime -Required -AddToDefaultView -Group "Main"
+$fieldShippingDate = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Shipping Date" -InternalName "ShippingDate" -Type DateTime -Required -AddToDefaultView -Group "Main"
 
-    $field
-    [xml]$schema = $field.SchemaXml
-    $schema.Field.SetAttribute("Format","DateOnly")
-    Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
+    $fieldShippingDate
+    [xml]$schemaShippingDate = $fieldShippingDate.SchemaXml
+    $schemaShippingDate.Field.SetAttribute("Format","DateOnly")
+    Set-PnPField -List "$($settings.SPOList)" -Identity $fieldShippingDate.Id -Values @{SchemaXml=$schemaShippingDate.OuterXml} -UpdateExistingLists
 
-    $filed = Get-PnPField -List "$($settings.SPOList)" -Identity "ShippingDate"
-    $field.DefaultFormula = "=NOW()+30"
-    $field.Update()
-    $field.Context.ExecuteQuery()
+    $fieldShippingDate = Get-PnPField -List "$($settings.SPOList)" -Identity "ShippingDate"
+    $fieldShippingDate.DefaultFormula = "=NOW()+30"
+    $fieldShippingDate.Update()
+    $fieldShippingDate.Context.ExecuteQuery()
 
 
 # ════ Shipping Method
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Shipping Method"  -InternalName "ShippingMethod" -Type Choice -Choices $ShippingMethod -Required -AddToDefaultView -Group "Main"
+$fieldShippingMethod = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Shipping Method"  -InternalName "ShippingMethod" -Type Choice -Choices $ShippingMethod -Required -AddToDefaultView -Group "Main"
 
-    $field
-    $field.DefaultValue = "Land"
-    $field.Update()
-    $field.Context.ExecuteQuery()
+    $fieldShippingMethod
+    $fieldShippingMethod.DefaultValue = "Land"
+    $fieldShippingMethod.Update()
+    $fieldShippingMethod.Context.ExecuteQuery()
 
 
 # ════ Vessel Name
 
-Add-PnPField -List "$($settings.SPOList)" -DisplayName "Vessel Name" -InternalName "VesselNameOrID" -Type Choice -Choices $VesselName -AddToDefaultView -Group "Main"
+$VesselNames = $AirlineNames + $ShippingNames
+
+Add-PnPField -List "$($settings.SPOList)" -DisplayName "Vessel Name" -InternalName "VesselNameOrID" -Type Choice -Choices $VesselNames -AddToDefaultView -Group "Main"
 
 
 # ════ Port Of Origin
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Port Of Origin" -InternalName "PortOfOrigin" -Type Text -AddToDefaultView -Group "Main"
+$fieldPortOfOrigin = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Port Of Origin" -InternalName "PortOfOrigin" -Type Text -AddToDefaultView -Group "Main"
 
-    $field
-    [xml]$schema = $field.SchemaXml
-    $schema.Field.SetAttribute("CustomFormatter", $customFormaterMaps)
-    $schema.Field.SetAttribute("MaxLength", 90)
-    Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
+    $fieldPortOfOrigin
+    [xml]$schemaPortOfOrigin = $fieldPortOfOrigin.SchemaXml
+    $schemaPortOfOrigin.Field.SetAttribute("CustomFormatter", $customFormaterMaps)
+    $schemaPortOfOrigin.Field.SetAttribute("MaxLength", 90)
+    Set-PnPField -List "$($settings.SPOList)" -Identity $fieldPortOfOrigin.Id -Values @{SchemaXml=$schemaPortOfOrigin.OuterXml} -UpdateExistingLists
 
 
 # ════ Port Of Origin Name
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Port Of Origin Name"  -InternalName "PortOfOriginName" -Type Text -AddToDefaultView -Group "Main"
+$fieldPortOfOriginName = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Port Of Origin Name"  -InternalName "PortOfOriginName" -Type Text -AddToDefaultView -Group "Main"
 
-    $field
-    Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{MaxLength=40}
+    $fieldPortOfOriginName
+    Set-PnPField -List "$($settings.SPOList)" -Identity $fieldPortOfOriginName.Id -Values @{MaxLength=40}
 
 
 # ════ Port Of Destiny
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Port Of Destiny" -InternalName "PortOfDestiny" -Type Text -AddToDefaultView -Group "Main"
+$fieldPortOfDestiny = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Port Of Destiny" -InternalName "PortOfDestiny" -Type Text -AddToDefaultView -Group "Main"
 
-    $field
-    [xml]$schema = $field.SchemaXml
-    $schema.Field.SetAttribute("CustomFormatter", $customFormaterMaps)
-    $schema.Field.SetAttribute("MaxLength", 90)
-    Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{SchemaXml=$schema.OuterXml} -UpdateExistingLists
+    $fieldPortOfDestiny
+    [xml]$schemaPortOfDestiny = $fieldPortOfDestiny.SchemaXml
+    $schemaPortOfDestiny.Field.SetAttribute("CustomFormatter", $customFormaterMaps)
+    $schemaPortOfDestiny.Field.SetAttribute("MaxLength", 90)
+    Set-PnPField -List "$($settings.SPOList)" -Identity $fieldPortOfDestiny.Id -Values @{SchemaXml=$schemaPortOfDestiny.OuterXml} -UpdateExistingLists
 
 
 # ════ Port Of Destiny Name
 
-$field = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Port Of Destiny Name" -InternalName "PortOfDestinyName" -Type Text -AddToDefaultView -Group "Main"
+$fieldPortOfDestinyName = Add-PnPField -List "$($settings.SPOList)" -DisplayName "Port Of Destiny Name" -InternalName "PortOfDestinyName" -Type Text -AddToDefaultView -Group "Main"
 
-    $field
-    Set-PnPField -List "$($settings.SPOList)" -Identity $field.Id -Values @{MaxLength=40}
+    $fieldPortOfDestinyName
+    Set-PnPField -List "$($settings.SPOList)" -Identity $fieldPortOfDestinyName.Id -Values @{MaxLength=40}
 
 
 # ════ Shipping Notes

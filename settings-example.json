@@ -1,14 +1,15 @@
 {
-   "SPORootSite" : "tenant.sharepoint.com",
-   "SPOSite"     : "Commerce",
-   "SPOList"     : "sales",
+   "SPORootSite" : "tenantname.sharepoint.com",                         // Root site URL, it will be passed as like "https://tenantname.sharepoint.com"
+   "SPOSite"     : "Commerce",                                          // Site name - the target SPO Site
+   "SPOList"     : "sales",                                             // List name - the list from the SPO Site
 
-   "SPOAddinClientId"     : "00000000-0000-0000-0000-000000000000",
-   "SPOAddinClientSecret" : "xxxXXXXxxxXXXXxxx",
+   "tenant_id"     : "00000000-0000-0000-0000-000000000000",            // Directory (tenant) ID
+   "tenant_domain" : "companydomain.com",                               // Tenant domain (e.g., contoso.onmicrosoft.com)
 
-   "BingAPIKey" : "xxxXXXXxxxXXXXxxx",
+   "client_id"     : "00000000-0000-0000-0000-000000000000",            // Application (client) ID
+   "client_secret" : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",        // Client secret (password) for the application
+   "client_thumbprint" : "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",    // Thumbprint of the certificate used for authentication (if using certificate-based authentication)
 
-   "tenant"        : "00000000-0000-0000-0000-000000000000",
-   "client_id"     : "00000000-0000-0000-0000-000000000000",
-   "client_secret" : "xxxXXXXxxxXXXXxxx"
+   "entra_applicationname" : "PnP Automation",                          // Name of the Entra Application and for the certificate files (.pfx and .cer)
+   "certificate_password"  : "Password"                                 // Password for the certificate file (.pfx)
 }

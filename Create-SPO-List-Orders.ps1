@@ -10,10 +10,10 @@ else
     $settings = Get-Content -Path .\settings.json | ConvertFrom-Json
 }
 
-Connect-PnPOnline -Url                  "https://$($settings.SPORootSite)/sites/$($settings.SPOSite)" `
-                  -ClientId             "$($settings.client_id)"                                      `
+Connect-PnPOnline -Url                  "https://$($settings.SPORootSite)/sites/$($settings.SPOSite)"                             `
+                  -ClientId             "$($settings.client_id)"                                                                  `
                   -CertificatePassword  (ConvertTo-SecureString -String $($settings.certificate_password) -AsPlainText -Force)    `
-                  -CertificatePath      ".\$($settings.entra_applicationname).pfx"                                                      `
+                  -CertificatePath      ".\$($settings.entra_applicationname).pfx"                                                `
                   -Tenant               $settings.tenant_domain
 
 

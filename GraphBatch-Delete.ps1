@@ -66,25 +66,30 @@ else
 
 #   deletion process begins from the first ID available
 
-$requestID = Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/sites/$($siteID)/lists/$($listID)/items?`$top=1"  `
-                               -Headers @{"Authorization" = "Bearer $($Token_GraphAPI.access_token)"}                   `
-                               -ContentType "application/json; charset=utf-8"                                           `
-                               -Method GET
+#
+# $requestID = Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/sites/$($siteID)/lists/$($listID)/items?`$top=1"  `
+#                                -Headers @{"Authorization" = "Bearer $($Token_GraphAPI.access_token)"}                   `
+#                                -ContentType "application/json; charset=utf-8"                                           `
+#                                -Method GET
+#
+# if ($null -eq $requestID)
+# {
+#     "- There are no more items!`n"
+#     exits
+# }
+#
 
-if ($null -eq $requestID)
-{
-    "- There are no more items!`n"
-    exit
-}
 
 #   where to start and finish (SPO List item IDs)
 
-$itemDeleteStartID = $requestID.value.id
-$itemDeleteEndID   = 1000
+$itemDeleteStartID = 459760   #$requestID.value.id
+$itemDeleteEndID   = 16000
 
 #   self-contained, useful variables for the deletion loop
 
-$batchTotal    = [math]::ceiling( ($itemDeleteEndID - $itemDeleteStartID) / 20 )
+#$batchTotal    = [math]::ceiling( ($itemDeleteEndID - $itemDeleteStartID) / 20 )
+$batchTotal    = [math]::ceiling( ($itemDeleteStartID - $itemDeleteEndID) / 20 )
+
 $leadingZeroes = "d" + $($batchTotal).ToString().Length
 $batchCurrent  = $itemsQueued = $index = $dependsOn = 0
 $showOutput    = $false
@@ -102,7 +107,7 @@ $itemDeleteStartID..$itemDeleteEndID | % {
     $dependsOn++
 
     $request = @{
-                    id      = $_
+                    id      = "$_"
                     url     = "/sites/$siteId/lists/$listId/items/$_"
                     headers = @{ "Content-Type" = "application/json" }
                     method  = "DELETE"
@@ -110,7 +115,9 @@ $itemDeleteStartID..$itemDeleteEndID | % {
 
     if ($dependsOn -gt 1)
     {
-        $request.Add( "dependsOn", @($_-1) )
+        #  $request.Add( "dependsOn", @($_-1) )
+
+        $request.Add("dependsOn", @("$($_ + 1)"))
     }
 
     $requests += $request

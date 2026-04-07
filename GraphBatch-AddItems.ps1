@@ -5,7 +5,7 @@ clear-host
 #
 
 $RunSettings_SoftRun      = $false
-$RunSettings_TotalRecords = 10
+$RunSettings_TotalRecords = 1
 
 #
 #   future implementation
@@ -57,7 +57,7 @@ if ( (Test-Path -Path ".\world-data-Ports.csv") -and ($null -eq $ports) )
 }
 elseif ( (Test-Path -Path ".\world-data-Ports.csv") -eq $false )
 {
-    write-error ">> wolrd-data-Ports.csv not found!`n"
+    write-error ">> world-data-Ports.csv not found!`n"
     break
 }
 
@@ -557,6 +557,8 @@ $FreightTerms = @(
 
 #region ══════════════════════════════════════════════════════════════════════════════════════[ Graph Token, Site, List, and Users ]
 
+#   Access Token for Microsoft Graph API
+
 $Token_Body = @{
                     "tenant"        = $settings.tenant_domain
                     "grant_type"    = "client_credentials"
@@ -593,22 +595,6 @@ else
     break
 }
 
-#   the List ID for $settings.SPOList
-
-$requestList = Invoke-RestMethod -Uri  "https://graph.microsoft.com/v1.0/sites/$($siteId)/lists/$($settings.SPOList)"  `
-                                 -Headers @{"Authorization" = "Bearer $($Token_GraphAPI.access_token)"}                `
-                                 -ContentType "application/json; charset=utf-8"                                        `
-                                 -Method GET
-
-if ($null -ne $requestList)
-{
-    $listID = $requestList.id
-}
-else
-{
-    write-error ">> List '$($settings.SPOList)' not found!`n"
-    break
-}
 
 #
 #   IMPORTANT NOTICE
@@ -661,6 +647,23 @@ $requestUsers = Invoke-RestMethod -Uri "https://graph.microsoft.com/v1.0/sites/$
 
 $Users = $requestUsers.value.fields | ? { $_.IsSiteAdmin -eq $false -and $_.Deleted -eq $false -and $_.SipAddress  -ne $null } | select id
 
+#   the List ID for $settings.SPOList
+
+$requestList = Invoke-RestMethod -Uri  "https://graph.microsoft.com/v1.0/sites/$($siteId)/lists/$($settings.SPOList)"  `
+                                 -Headers @{"Authorization" = "Bearer $($Token_GraphAPI.access_token)"}                `
+                                 -ContentType "application/json; charset=utf-8"                                        `
+                                 -Method GET
+
+if ($null -ne $requestList)
+{
+    $listID = $requestList.id
+}
+else
+{
+    write-error ">> List '$($settings.SPOList)' not found!`n"
+    break
+}
+
 #endregion ═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 
@@ -672,7 +675,7 @@ $requestExecuted = $false
 $leadingZeroes   = "d" + $([math]::ceiling($RunSettings_TotalRecords / 20).ToString().Length)
 $dependsOn       = 0
 $batch_Counter   = 0
-$load            = @{ requests = @() }
+$load            = [ordered]@{ requests = @() }
 $payload         = $null
 
 $timeRecord  = 0
@@ -779,60 +782,62 @@ for ($loop = 1; $loop -le $RunSettings_TotalRecords; $loop++)
     #   adds the current record to the body of requests
     #
 
-    $load.requests += @{
-                             id      = $loop
-                             url     = "sites/$($siteID)/lists/$($listID)/items"
-                             method  = "POST"
-                             headers = @{ "content-type" = "application/json" }
-                             body    = @{ fields = @{
-                                                        "ItemType"      = $field_ItemType
-                                                        "ItemSKU"       = $field_ItemSKU
-                                                        "Sector"        = $field_Sector
-                                                        "Confidential"  = $field_Confidential
+    $load.requests += [ordered]@{
+                                    id      = $loop
+                                    url     = "sites/$($siteID)/lists/$($listID)/items"
+                                    method  = "POST"
+                                    headers = @{ "content-type" = "application/json" }
+                                    body    = @{ fields = [ordered]@{
+                                                                        "ItemType"      = $field_ItemType
+                                                                        "ItemSKU"       = $field_ItemSKU
+                                                                        "Sector"        = $field_Sector
+                                                                        "Confidential"  = $field_Confidential
 
-                                                        "OrderID"       = $field_OrderID
-                                                        "OrderPriority" = $field_OrderPriority
-                                                        "OrderDate"     = $field_OrderDate
+                                                                        "OrderID"       = $field_OrderID
+                                                                        "OrderPriority" = $field_OrderPriority
+                                                                        "OrderDate"     = $field_OrderDate
 
-                                                        "UnitsSold"     = $field_UnitsSold
-                                                        "UnitPrice"     = $field_UnitPrice
-                                                        "UnitCost"      = $field_UnitCost
+                                                                        "UnitsSold"     = $field_UnitsSold
+                                                                        "UnitPrice"     = $field_UnitPrice
+                                                                        "UnitCost"      = $field_UnitCost
 
-                                                        "TotalRevenue"  = $field_TotalRevenue
-                                                        "TotalCost"     = $field_TotalCost
-                                                        "TotalProfit"   = $field_TotalProfit
+                                                                        "TotalRevenue"  = $field_TotalRevenue
+                                                                        "TotalCost"     = $field_TotalCost
+                                                                        "TotalProfit"   = $field_TotalProfit
 
-                                                        "Containers"    = $field_Containers
-                                                        "FreightTerms"  = $field_FreightTerms
-                                                        "SalesChannel"  = $field_SalesChannel
+                                                                        "Containers"    = $field_Containers
+                                                                        "FreightTerms"  = $field_FreightTerms
+                                                                        "SalesChannel"  = $field_SalesChannel
 
-                                                        "SalesCoordinatorLookupId"   = $field_SalesCoordinator
-                                                        "SalesPersonLookupId"        = $field_SalesPerson
-                                                        "PaymentCoordinatorLookupId" = $field_PaymentCoordinator
-                                                        "ShippingForemanLookupId"    = $field_ShippingForeman
+                                                                        "SalesCoordinatorLookupId"   = $field_SalesCoordinator
+                                                                        "SalesPersonLookupId"        = $field_SalesPerson
+                                                                        "PaymentCoordinatorLookupId" = $field_PaymentCoordinator
+                                                                        "ShippingForemanLookupId"    = $field_ShippingForeman
 
-                                                        "ShippingInsured"   = $field_ShippingInsured
-                                                        "ShippingDate"      = $field_ShippingDate
-                                                        "ShippingMethod"    = $field_ShippingMethod
+                                                                        "ShippingInsured"   = $field_ShippingInsured
+                                                                        "ShippingDate"      = $field_ShippingDate
+                                                                        "ShippingMethod"    = $field_ShippingMethod
 
-                                                        "VesselNameOrID"    = $field_VesselNameOrID
-                                                        "PortOfOrigin"      = $field_PortOfOrigin
-                                                        "PortOfOriginName"  = $field_PortOfOriginName
-                                                        "PortOfDestiny"     = $field_PortOfDestiny
-                                                        "PortOfDestinyName" = $field_PortOfDestinyName
+                                                                        "VesselNameOrID"    = $field_VesselNameOrID
+                                                                        "PortOfOrigin"      = $field_PortOfOrigin
+                                                                        "PortOfOriginName"  = $field_PortOfOriginName
+                                                                        "PortOfDestiny"     = $field_PortOfDestiny
+                                                                        "PortOfDestinyName" = $field_PortOfDestinyName
 
-                                                        "ShippingNotes"     = $field_ShippingNotes
-                                                        "Comments"          = $field_Comments
-                                                        "Title"             = $field_Title
-                                                    }
-                                        }
-                       }
+                                                                        "ShippingNotes"     = $field_ShippingNotes
+                                                                        "Comments"          = $field_Comments
+                                                                        "Title"             = $field_Title
+                                                                    }
+                                                }
+                                }
 
     #
     #   increments the dependsOn indexer, when it is greather than 1, dependency will be created
     #
 
     $dependsOn++
+
+    Write-Host "`n- Depends On: $dependsOn`n"
 
     #
     #   creates depencies for requests with more than 1 item
@@ -885,6 +890,8 @@ for ($loop = 1; $loop -le $RunSettings_TotalRecords; $loop++)
                                                  -Body $payload                                                          `
                                                  -Method Post
 
+                    Write-Host "`n$payload`n"
+
                     if ($request -eq $null)
                     {
                         # TO-DO:  failed requests are not being correctly handled here (to be improved later on)
@@ -935,7 +942,7 @@ for ($loop = 1; $loop -le $RunSettings_TotalRecords; $loop++)
     {
         $timeTotal += $timePayload + $timeRequest
 
-        "════  Batch {0:$($leadingZeroes)} of {1} `t`t`t payload: {2:d2}s.{3:d3}ms `t`t request: {4:d1}m:{5:d2}s.{6:d3}ms `t`t time: {7:d2}h:{8:d2}m:{9:d2}s.{10:d3}ms  `t`t {11,10} / {12} records `n" -f $batch_Counter, [math]::ceiling($RunSettings_TotalRecords / 20),  $timePayload.Seconds, $timePayload.Milliseconds,   $timeRequest.Minutes, $timeRequest.Seconds, $timeRequest.Milliseconds,   $timeTotal.Hours, $timeTotal.Minutes, $timeTotal.Seconds, $timeTotal.Milliseconds, $loop, $RunSettings_TotalRecords
+        "════  Batch {0:$($leadingZeroes)} of {1}          payload: {2:d2}s.{3:d3}ms          request: {4:d1}m:{5:d2}s.{6:d3}ms          time: {7:d2}h:{8:d2}m:{9:d2}s.{10:d3}ms          {11,10} / {12} records `n" -f $batch_Counter, [math]::ceiling($RunSettings_TotalRecords / 20),  $timePayload.Seconds, $timePayload.Milliseconds,   $timeRequest.Minutes, $timeRequest.Seconds, $timeRequest.Milliseconds,   $timeTotal.Hours, $timeTotal.Minutes, $timeTotal.Seconds, $timeTotal.Milliseconds, $loop, $RunSettings_TotalRecords
 
         #
         #   shows anything wrong (response is not HTTP 201)
